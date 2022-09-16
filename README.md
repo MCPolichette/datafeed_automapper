@@ -16,8 +16,8 @@ A bootstrap5-based tool to automatically map merchant datafeeds.
 
 ### NEW UPDATES from original file
 
-- [ ] Bootstrap for displays, allows for easy scrolling table, and buttons.
-- [ ] New field arrays, and using objects to keep logic clean and readable.
+- [x] Bootstrap for displays, allows for easy scrolling table, and buttons.
+- [x] New field arrays, and using objects to keep logic clean and readable.
 - [ ] Ability to update the mapping via DOM.
 - [ ] Add 5 or so rows of data to the display, to show which columns are blank.
 - [ ] Add variant mapping.
