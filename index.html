@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="icon" type=".gif" href="https://mcpolichette.github.io/Super_Hero_Giphy_API/images/markbounce.gif">
+    <title>AvantLink Automapper</title>
+    <style type="text/css">
+        .mapView {
+            min-width: 500px;
+            height: 100%;
+            width: 100%;
+            min-height: 50px;
+            word-wrap: break-word;
+        }
+
+        dt {
+            font-weight: bold;
+            display: list-item;
+            list-style-type: disc;
+            list-style-position: inside;
+        }
+
+        .border {
+            border-style: dotted;
+            border-width: 1px;
+            border-color: red;
+
+        }
+
+        .mapNotes {
+            max-width: 100%;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class = 'container'>
+        <div class="row">
+            <h4>Upload the feedfile below</h4>
+            <label for="formFileLg"  class="form-label">Select downloaded Feed File</label>
+            <input onchange="readFile(this)" class="form-control form-control-lg" id="formFileLg" type="file">
+        </div>
+    </div>
+    <div class = 'container'>
+        <div class = 'row'>
+            
+            <strong id='pipeDisplay' class='mapView'></strong>
+            <div id='tableDisplay'></div>
+        
+        </div>
+            <button type='button' id='buttonPipeCopy' hidden onclick='copyToClipboard("pipeDisplay")'>Copy the Pipe
+            Delimited
+            Text</button>
+
+            <button type='button' id='buttonAttCopy' hidden onclick='copyToClipboard(attributeMap)'>Copy Attribute
+            Map</button>
+            <hr>
+        <div class="table-responsive">
+            <table class="table">
+              ...
+            </table>
+        </div>
+    
+        <hr>
+        <!-- <button type='button' id='buttonTable' hidden target='_blank'
+            onclick='window.location.href='https://spoti.fi/3wq9qIU;''>Table
+            Format</button> -->
+        <h4 id='updateArray' hidden>Some required fields were not found. If it's obviously present in the Merchant's
+            feedfile, please update the fields in this HTML document</h4>
+        <h4>Notes</h4>
+        <dl id='mapNotes' class='mapNotes'></dl>
+        <div id=errors hidden class='border'>
+            <h4>Errors</h4>
+            <dl id='mapErrors' class='mapNotes'></dl>
+        </div>
+        <div id='exampleBuildField' hidden>
+            <h4>Example Field Builder</h4>
+            <tbody>
+                <tr>
+                    <td valign='top' align='right'><b>#1) Field: </b></td>
+                    <td valign='top' align='left'> <input size='20' maxlength='50' id='buildFieldName'
+                            type='text'><strong> = </strong><input size='53' maxlength='255' id='buildFieldFormula'
+                            type='text'><br></td>
+                </tr>
+                <tr>
+                    <td valign='top' align='right'><b>Regex search for </b></td>
+                    <td valign='top' align='left'> <input size='15' maxlength='255' id='buildFieldSearch'
+                            type='text'><strong> replace with </strong><input size='30' maxlength='255'
+                            id='buildFieldReplace' type='text'></td>
+                </tr>
+                <tr>
+                    <td valign='top' align='right'><b>Formatting: </b></td>
+                    <td valign='top' align='left'> <select id='buildFieldFormat'>
+                            <option value=''>None</option>
+                    </td>
+                </tr>
+            </tbody>
+        </div>
+        </p>
+    </div>
+    <!-- SCRIPTS! -->
+    <script>
+        // Global field arrays, and attribute maps are listed at the bottom of this script.
+        function revealHidden(id) {//Reveals a hidden HTML element.
+            let element = document.getElementById(id);
+            if (element.hidden) {
+                element.removeAttribute('hidden');
+            };
+        };
+        function hide(id) {//Reveals a hidden HTML element.
+            let element = document.getElementById(id);
+            if (element.hidden) {
+                element.setAttribute('hidden', 'true');
+            };
+        };
+        function copyToClipboard(id) {// Create a single text value, to clipboard
+            let copy = '';
+            if ((document.getElementById(id)) == null) {
+                copy = id
+            }
+            else { copy = document.getElementById(id).innerText };
+            navigator.clipboard.writeText(copy);
+            alert('Copied to your Clipboard!');
+        };
+        function clearAll() {  // function that clears all elements
+            document.getElementsByClassName('mapView').innerHTML = '';
+            document.getElementById('mapNotes').innerHTML = '';
+            document.getElementById('mapErrors').innerHTML = '';
+            hide('exampleBuildField')
+
+        };
+        function addNote(text, subtext) {// Function to Add Line Item Notes
+            var noteList = document.getElementById('mapNotes');
+            var newListItem = document.createElement('dt');
+            newListItem.appendChild(document.createTextNode(text));
+            noteList.appendChild(newListItem);
+        };
+        function addError(text, subtext, buttonParts) {// Function to Add Line Item Errors
+            var errorList = document.getElementById('mapErrors');
+            var newListItem = document.createElement('dt');
+            var secondaryListItem = document.createElement('dd');
+            newListItem.setAttribute('class', 'error')
+            var buttonListItem = document.createElement('dd')
+            newListItem.appendChild(document.createTextNode(text));
+            if (subtext) {
+                secondaryListItem.appendChild(document.createTextNode(subtext));
+            };
+            if (buttonParts) {
+                let buttonDisplay = document.createElement('button');
+                buttonDisplay.id = buttonParts.errorType;
+                buttonDisplay.innerHTML = 'click for example';
+                buttonDisplay.onclick = function () {
+                    document.getElementById('buildFieldName').value = buttonParts.field;
+                    document.getElementById('buildFieldFormula').value = buttonParts.formula;
+                    revealHidden('exampleBuildField');
+                };
+                buttonListItem.appendChild(buttonDisplay);
+            };
+            errorList.appendChild(newListItem);
+            errorList.appendChild(secondaryListItem);
+            errorList.appendChild(buttonListItem);
+            revealHidden('errors')
+        };
+        function duplicateCheck(map) {
+            console.log("checking for duplicates")
+            for (i = 0; i < map.length; i++) {
+                for (j = i + 1; j < map.length; j++) {
+                    if (map[i] == map[j]) {
+                        addError("Found a duplicate match for " + map[i], " at index's " + i + " & " + j + " one will need to be deleted");
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Build Table Function
+        // Required Fields Function
+        function determinePotentialDepartments(arr, map) {
+            var potentialDepts = [];
+            arr.forEach((arrElement, i) => {
+                deptArrElements.forEach(fieldObject => fieldObject.matches.forEach(fieldObjectType => {
+                    if (fieldObjectType === arrElement) {
+                        map[i] = fieldObject.field
+                        potentialDepts.push({
+                            field: fieldObject.field,
+                            index: i
+                        })
+                    }
+                }
+                ))
+            });
+            function deptCheck(arr) {
+                // let deptFound = arr.find(item => item.field == 'strDepartment');
+                if (arr.find(item => item.field == 'strDepartment')) { }
+                else (arr.sort((a, b) => {
+                    return a.priority - b.priority;
+                    arr[0].field == 'strDepartment';
+                    arr[0].altOptions == ['strCategory', 'strSubCategory'];
+                    arr[1].field == 'strCategory';
+                    arr[1].altOptions == ['strSubCategory', 'strDepartment'];
+                    arr[2].field == 'strSubCategory'
+                    arr[2].altOptions == ['strCategory', 'strDepartment'];
+                }))
+                return arr;
+            };
+            function buildDeptSelection(object) { //FIRST STEP TO BUILDING A DYNAMIC FIELD CHANGER
+                return
+                `<select id='departmentTest1' name='departmentTest1'>
+                    <option value=`+ object.field + `>` + object.field + `</option>
+                    <option value='blank'>''</option>
+                    <option value=`+ object.altOptions[0] + `>` + object.altOptions[0] + `</option>
+                    <option value=`+ object.altOptions[1] + `>` + object.altOptions[1] + `</option>
+                    <option value=`+ object.altOptions[2] + `>` + object.altOptions[2] + `<option>        
+                    </select><button id='updateDept`+ object.index + `'>Change</button>`
+            };
+            switch (potentialDepts.length) {
+                case 0:
+                    addError(
+                        'No Department column was detected.', ' An alternative solution, use the Field Builder Rule to force Department to "general" ',
+                        buttonConstruction(
+                            'missingDepartment', 'strDepartment', 'General'
+                        ))
+                    break
+                case 1:
+                    map[potentialDepts[0].index] = 'strDepartment';
+                    break
+                case 2:
+                    deptCheck(potentialDepts)
+                    map[potentialDepts[0].index] = 'strDepartment';
+                    map[potentialDepts[1].index] = 'strCategory';
+                    break
+                case 3:
+                    deptCheck(potentialDepts)
+                    map[potentialDepts[0].index] = 'strDepartment';
+                    map[potentialDepts[1].index] = 'strCategory';
+                    map[potentialDepts[2].index] = 'strSubCategory';
+                    break
+                case 4:  // no action!?  All potential fields are mapped as titled. CONSIDER : a note stating that all possible category titles were detected and mapped accordingly?
+                    break
+            }
+            return map
+        };
+        function determineRequiredFields(arr, map) {
+            arr.forEach((firstArrayElement, index) => {
+                requiredFields.forEach(fieldObject => fieldObject.matches.forEach(fieldObjectType => {
+                    if (fieldObjectType === firstArrayElement) {
+                        map[index] = fieldObject.field;
+                    }
+                }
+                ))
+            })
+            return map
+        };
+        function buttonConstruction(newError, newField, newReplace, newRegex, newReplaceWith) {
+            let buttonParts = { //BUILDING Button OBject (parts).. for ERRORS
+                errorType: newError,
+                formula: newReplace,
+                field: newField,
+                regex: newRegex,
+                replacWith: newReplaceWith,
+            };
+            return buttonParts
+        };
+        function checkRequiredFields(arr) {
+            requiredFields.forEach(field => { // Alert if any required Fields are missing.
+                let x = '';
+
+                if (arr.includes(field.field)) { }
+                else {
+                    revealHidden('updateArray')
+                    console.log("LINE 288")
+                    let missingField = field.field
+                    switch (missingField) {
+                        //CONSIDER MOVING the logic from determinePotentialDepartments() into this switch.
+                        // CONSIDER using Variables to reduce duplicated texts.
+                        case 'strProductName':
+                            addError(missingField + ' was not detected, or mapped. ');
+                            break;
+                        case 'strProductSKU':
+                            addError(
+                                missingField + ' was not detected, or mapped.',
+                                'An Alternative Solution: force the Product SKUs to match the Product Name.',
+                                buttonConstruction("fieldReplace", "strProductSKU", "%%strProductName%%"))
+                            break;
+                        case 'dblProductPrice':
+                            addError(missingField + " was not detected, or mapped. ")
+                            break;
+                        case 'strLargeImageURL': //FIX THIS ERROR- NOT FIRING!?
+                            if (arr.includes("strMediumImageURL") && arr.includes("strThumbnailURL")) {
+                                arr[arr.includes('strMediumImageURL').index] = 'strLargeImageURL'
+                                addNote("strLargeImageURL identifiers were not found or mapped. ",
+                                    "However, a Medium Image URL column was detected and used.")
+                            } else if (arr.includes("strMediumImageURL")) {
+                                arr[arr.includes('strThumbnailImageURL').index] = 'strLargeImageURL';
+                                addNote("strLargeImageURL identifiers were not found or mapped. ",
+                                    "However, a Thumbnail Image URL column was detected and used.")
+                            } else {
+                                addError(missingField, "was not detected. ",
+                                    "An Alternative Solution, force the strLargeImageURL to be the Merchant's logo URL",
+                                    buttonConstruction("fieldReplace",
+                                        'strLargeImageURL',
+                                        'http://PretendCompany.com/images/logo.jpg'))
+                            }
+                            break;
+                        case 'txtLongDescription':
+                            //CONSIDER checking for a Small Description Field first.
+                            addError(
+                                missingField + " was not detected, or mapped.",
+                                "An Alternative Solution: force the Product SKUs to match the Product Name.",
+                                buttonConstruction("fieldReplace", missingField, "%%strProductName%%"))
+                            break;
+                        case 'strBuyURL':
+                            addError(
+                                missingField + " was not detected. ",
+                                "An Alternative Solution, force the strBuyURL to be the Merchant's primary URL",
+                                buttonConstruction('fieldReplace', 'strBuyURL', 'http://PretendCompany.com'))
+                            break;
+                    }
+
+                }
+            })
+            return arr
+            addError('Missing ' + field.field + ' Which is a required minimum field.', button);
+        };
+        function determineOtherFields(arr, map) {// Additional Column Layout Fields Function
+            arr.forEach((ArrayElement, index) => {
+                additionalFields.forEach(fieldObject => fieldObject.matches.forEach(fieldObjectType => {
+                    if (fieldObjectType === ArrayElement) {
+                        map[index] = fieldObject.field;
+                    }
+                }
+                ))
+            })
+            return map
+        };
+        function determineCommonStrAttributes(arr, map) { //Final Map of strAttributes
+            let att = false;
+            arr.forEach((ArrayElement, index) => {
+                commonStrAttributes.forEach(fieldObject => fieldObject.matches.forEach(fieldObjectType => {
+                    if (fieldObjectType === ArrayElement) {
+                        att = true;
+                    }
+                }))
+            })
+            if (att === false) {
+                addNote('no strAttributes were detected and mapped. Attribute Map is not neccessary')
+            } else {
+                addNote('strAttributes were mapped in. The Attribution Map button is available to have an Attribute map coppied to your clipboard.  click "Copy Attribute Map"');
+                revealHidden('buttonAttCopy'); // unhide the Copy Attribute Map button
+            };
+            return map
+        };
+        function stringToArray(string) {
+            string
+                .toLowerCase()
+                .replaceAll("'", '')
+                .replaceAll('"', '')
+                .replaceAll(',', /\t/g)
+                .replaceAll('|', /\t/g)
+            return string
+        }
+        function readFile(input) {
+            clearAll()
+            let file = input.files[0];
+            let fileReader = new FileReader();
+            let allLines = []
+            fileReader.readAsText(file);
+            fileReader.onload = function () {
+                var text = fileReader.result;
+                var allLines = text.split('\n')
+                console.log(allLines.length)
+                var validInput = allLines[0]
+                addNote(allLines.length + " rows detected")
+                if (validInput) { }
+                else {
+                    console.log('NOTHING in INPUT.  Using Test an internal example');
+                    var validInput = exampleColumns
+                    addNote('Nothing is in the input. Using test data from an internal example')
+                };
+                // BUILD ARRAYS TO WORK WITH
+                var merchantsArr = //Reference to the Merchant's actual dataset in an array
+                    stringToArray(validInput).split(/\t/g);
+                var merchantRows ={
+                    row1: stringToArray(allLines[1]).split(/\t/g),
+                    row2: stringToArray(allLines[2]).split(/\t/g),
+                    row3: stringToArray(allLines[3]).split(/\t/g),
+                    row4: stringToArray(allLines[4]).split(/\t/g),
+                    row5: stringToArray(allLines[5]).split(/\t/g),
+                    row6: stringToArray(allLines[6]).split(/\t/g),
+                                }
+                console.log(merchantRows)
+                var firstArray = //First step in building an array from Merchant Data (removing delimiters, any capitalizations and repetitive values)
+                    validInput.toLowerCase()
+                        .replaceAll("'", '')
+                        .replaceAll('"', '')
+                        .replaceAll(',', /\t/g)
+                        .replaceAll("|", /\t/g)
+                        .replaceAll('-', '')
+                        .replaceAll('_', '')
+                        .replaceAll(' ', '')
+                        .replaceAll('item', '')
+                        .replaceAll('product', '')
+                        .replaceAll('\r', '')
+                        .split(/\t/g);
+                console.log(firstArray)
+                if (merchantsArr.indexOf("product" || "item")) {// quickly check to see if the Merchant used 'product' or 'item' to define the product name, and ensure its placed in the array
+                    let i = merchantsArr.indexOf("product");
+                    let j = merchantsArr.indexOf("item")
+                    firstArray[i] = 'name'; firstArray[j] = 'name';
+                }
+                var arrayMap = //The map that will eventually be converted into finished product
+                    new Array(firstArray.length)
+                // Run Fields
+                console.log(firstArray)
+                var deptCheck = determinePotentialDepartments(firstArray, arrayMap)
+                var requiredFieldMap = (determineRequiredFields(firstArray, arrayMap));
+                var additionalFieldMap = (determineOtherFields(firstArray, requiredFieldMap));
+                var attributefieldbuilderMap = (determineCommonStrAttributes(firstArray, additionalFieldMap));
+                var pipeMap = (checkRequiredFields(attributefieldbuilderMap));
+                revealHidden('buttonPipeCopy')
+                duplicateCheck(pipeMap);
+                document.getElementById("pipeDisplay").innerHTML = pipeMap.toString().replaceAll(',', '|');
+            };
+            fileReader.onerror = function () {
+                alert(fileReader.error);
+            };
+        };
+        // DATAFEED FIELD ARRAYS
+        var exampleColumns = 'sku	item	image	price	link	description';
+        var exampleColumns2 = " 	Manufacturer Id	Brand Name	Product-Name	Long Description	Short Description	Category	SubCategory	Product Group	Thumb URL	Image URL	Buy Link	Keywords	Reviews		Sale Price	Brand Page Link	Brand Logo Image	Product Parent Grouping Id	Product Color	Product Size	Product Pattern	Product Material	Product Weight	Product Age Group	Product Gender	Product UPC	Product GTIN	Variants XML	Product GUID	Product Sale Price Effective Date	Product Availability	Product Visibility	Product Model Number	Product Quantity	Product Alternate Buy URL	Product Alternate Product ID	Department	Medium Image URL	Google Categorization	Item Based Commission";
+        // List of potential fields. (all spaces, dashes, and the terms 'product' and 'item' removed, to reduce load, and keep things streamlined)
+        var deptArrElements = [{
+            field: 'strDepartment',
+            matches: ['department', 'dept'],
+            priority: 1,
+        }, {
+            field: 'strCategory',
+            matches: ['category'],
+            priority: 3,
+        }, {
+            field: 'strSubCategory',
+            matches: ['subcategory'],
+            priority: 4,
+        }, {
+            field: "strAttribute10",
+            matches: ['googlecategory', 'googlecategorization'],
+            priority: 2,
+        },]
+        var requiredFields = [{
+            field: "strProductSKU",
+            matches: ['sku', 'id', 'number', 'idnumber'],
+        }, {
+            field: 'strProductName',
+            matches: ['name', 'title'],
+        }, {
+            field: 'dblProductPrice',
+            matches: ['price', 'retailprice', 'retail']
+        }, {
+            field: 'strLargeImage',
+            matches: ['imageurl', 'image', 'imageurllarge', 'imagelink']
+        }, {
+            field: 'txtLongDescription',
+            matches: ['longdescription', 'description',]
+        }, {
+            field: 'strBuyURL',
+            matches: ['link', 'buylink', 'buyurl', 'url']
+        }
+        ];
+        var additionalFields = [{
+            field: 'dblItemCommission',
+            matches: ['basedcommission', 'ibc', 'commission', 'commissionrate']
+        }, {
+            field: 'dblProductSalePrice',
+            matches: ['saleprice', 'sale']
+        }, {
+            field: 'strManufacturerPartNumber',
+            matches: ['manufacturerpartnumber', 'manufacturerid']
+        }, {
+            field: 'strBrandName',
+            matches: ['brandname', 'brand']
+        }, {
+            field: 'strBrandURL',
+            matches: ['brandurl', 'brandpagelink', 'brandpage']
+        }, {
+            field: 'strBrandLogoImage',
+            matches: ['brandlogoimage', 'brandimage', 'brandimageurl', 'logourl', 'logolink', 'logoimage', 'logourl']
+        }, {
+            field: 'strManufacturerPartNumber',
+            matches: ['manufacturerpartnumber', 'mpn']
+        }, {
+            field: 'strThumbnailURL',
+            matches: ['thumbnailurl', 'thumbnail', 'thumbnaillink', 'thumbnailimage', 'imageurlsmall', 'imagesmall', 'thumblink', 'thumbimage', 'thumburl']
+        }, {
+            field: 'strMediumImageURL',
+            matches: ['mediumimageurl', 'mediumimage', 'mediumimagelink', 'imageurlmedium']
+        }, {
+            field: 'txtShortDescription',
+            matches: ['shortdescription']
+        }
+        ];
+        var commonStrAttributes = [{
+            field: 'strAttribute1',
+            valueTitle: 'Product Parent Grouping Id',
+            type: '<type>string</type>',
+            matches: ['parentgroup', 'parentgroupid', 'groupid']
+        }, {
+            field: 'strAttribute2',
+            valueTitle: 'Product Color',
+            type: '<type>string</type>',
+            matches: ['color']
+        }, {
+            field: 'strAttribute3',
+            valueTitle: 'Product Size',
+            type: '<type>string</type>',
+            matches: ['size',]
+        }, {
+            field: 'strAttribute4',
+            valueTitle: 'Product Pattern',
+            type: '<type>string</type>',
+            matches: ['pattern', 'style']
+        }, {
+            field: 'strAttribute5',
+            valueTitle: 'Product Material',
+            type: '<type>string</type>',
+            matches: ['material']
+        }, {
+            field: 'strAttribute6',
+            valueTitle: 'Product Age Group',
+            type: '<type>string</type>',
+            matches: ['agegroup', 'age']
+        }, {
+            field: 'strAttribute7',
+            valueTitle: 'Product Gender',
+            type: '<type>string</type>',
+            matches: ['gender']
+        }, {
+            field: 'strAttribute8',
+            valueTitle: 'Product UPC',
+            type: '<type>string</type>',
+            matches: ['upc']
+        }, {
+            field: 'strAttribute9',
+            valueTitle: 'Product Availability',
+            type: '<type>string</type>',
+            matches: ['availability', 'available']
+        }, {
+            field: 'txtAttribute1',
+            valueTitle: 'Variants XML',
+            type: '<type>xml</type><compression>gz</compression>',
+            matches: ['xml', 'variantxml', 'variants', 'variantsxml']
+        }, {
+            field: 'txtAttribute2',
+            valueTitle: 'GTIN',
+            type: '<type>string</type>',
+            matches: ['gtin']
+
+        }
+        ];
+        var attributeMap = `<Fields>
+                <Field><name>strAttribute1</name><title>Parent Group ID</title><type>string</type></Field>
+
+                <Field><name>strAttribute2</name><title>Color</title><type>string</type></Field>
+
+                <Field><name>strAttribute3</name><title>Size</title><type>string</type></Field>
+
+                <Field><name>strAttribute4</name><title>Pattern</title><type>string</type></Field>
+
+                <Field><name>strAttribute5</name><title>Material</title><type>string</type></Field>
+
+                <Field><name>strAttribute6</name><title>Age Group</title><type>string</type></Field>
+
+                <Field><name>strAttribute7</name><title>Gender</title><type>string</type></Field>
+
+                <Field><name>strAttribute8</name><title>UPC</title><type>string</type></Field>
+
+                <Field><name>strAttribute9</name><title>Availability</title><type>string</type></Field>
+
+                <Field><name>strAttribute10</name><title>Google Product Category</title><type>string</type></Field>
+
+                <Field><name>strMediumImage</name><title>Medium Image URL</title><type>string</type></Field>
+
+                <Field><name>txtAttribute1</name><title>Variants XML</title><type>xml</type><compression>gz</compression></Field>
+
+                <Field><name>txtAttribute2</name><title>GTIN</title><type>string</type></Field>
+
+            </Fields>`;
+    </script>
+</body>
+</html>
