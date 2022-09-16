@@ -317,11 +317,21 @@
                 else {
                     let missing_field = field;
                     console.log(missing_field)
-                    missing_field.back_up.forEach(potential_backup => {
-
-                        console.log(potential_backup)
+                    missing_field.back_up.forEach(potential_back_up => {
+                        map.forEach(mapped_field => {
+                            if (mapped_field == potential_back_up) {
+                                map[map.indexOf(potential_back_up)] = missing_field.field_name
+                            }
+                            else {
+                                console.log("OOH BOY, If this doesn't work.. we got some brainstorming to do. ")
+                                console.log(mapped_field, potential_back_up, field)
+                            }
+                        })
+                        console.log(potential_back_up)
                     })
-                }
+                } console.log(feedfile)
+
+
 
                 //temp for reference DELETE THIS SOON OR EXPERIENCE PROBLEMATIC ERRRORS
                 //                             if (arr.includes("strMediumImageURL") && arr.includes("strThumbnailURL")) {
@@ -505,7 +515,7 @@
             };
         };
         // DATAFEED FIELD ARRAYS
-        var exampleColumns = ['strProductSku, strProductId'];
+        var exampleColumns = ['strProductSku', 'strProductId', 'strSubCategory'];
         var exampleColumns2 = " 	Manufacturer Id	Brand Name	Product-Name	Long Description	Short Description	Category	SubCategory	Product Group	Thumb URL	Image URL	Buy Link	Keywords	Reviews		Sale Price	Brand Page Link	Brand Logo Image	Product Parent Grouping Id	Product Color	Product Size	Product Pattern	Product Material	Product Weight	Product Age Group	Product Gender	Product UPC	Product GTIN	Variants XML	Product GUID	Product Sale Price Effective Date	Product Availability	Product Visibility	Product Model Number	Product Quantity	Product Alternate Buy URL	Product Alternate Product ID	Department	Medium Image URL	Google Categorization	Item Based Commission";
         // List of potential fields. (all spaces, dashes, and the terms 'product' and 'item' removed, to reduce load, and keep things streamlined)
         var fields = {
