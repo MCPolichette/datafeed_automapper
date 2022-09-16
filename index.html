@@ -48,6 +48,7 @@
     <div class='container d-flex flex-column min-vh-100 justify-content-center align-items-center'>
         <div class="row">
             <h4 class="justify-content-center">Mark's Automapper - variant edition</h4>
+            <button onclick="delete_this_function(exampleColumns)">Magic Test Button</button>
             <label for="formFileLg" class="form-label">Select downloaded Feed File</label>
             <input onchange="readFile(this)" class="form-control form-control-lg" id="formFileLg" type="file">
         </div>
@@ -57,6 +58,7 @@
                     <br>
 
                     <div class="shadow p-3 mb-5 bg-body rounded">
+                        <p>Pipe Delimeted Map:</p>
                         <strong id='pipeDisplay' class='mapView'></strong>
                     </div>
 
@@ -118,6 +120,12 @@
     </div>
     <!-- SCRIPTS! -->
     <script>
+        // Global Variables
+        var feedfile = {
+            map: [],
+            merchant_layout: [],
+            data_rows: [],
+        };
         // !? All new scripting above this line!
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Global field arrays, and attribute maps are listed at the bottom of this script.
@@ -127,7 +135,7 @@
                 if (element.hidden) {
                     element.removeAttribute('hidden');
                 };
-            })
+            });
         };
         function hide(arr) {//Reveals a hidden HTML element.
             arr.forEach(id => {
@@ -135,7 +143,7 @@
                 if (element.hidden) {
                     element.setAttribute('hidden', 'true');
                 };
-            })
+            });
         };
         function copyToClipboard(id) {// Create a single text value, to clipboard
             let copy = '';
@@ -150,8 +158,7 @@
             document.getElementsByClassName('mapView').innerHTML = '';
             document.getElementById('mapNotes').innerHTML = '';
             document.getElementById('mapErrors').innerHTML = '';
-            hide('exampleBuildField')
-
+            hide(['exampleBuildField'])
         };
         function addNote(text, subtext) {// Function to Add Line Item Notes
             var noteList = document.getElementById('mapNotes');
@@ -176,14 +183,14 @@
                 buttonDisplay.onclick = function () {
                     document.getElementById('buildFieldName').value = buttonParts.field;
                     document.getElementById('buildFieldFormula').value = buttonParts.formula;
-                    revealHidden('exampleBuildField');
+                    revealHidden(['exampleBuildField']);
                 };
                 buttonListItem.appendChild(buttonDisplay);
             };
             errorList.appendChild(newListItem);
             errorList.appendChild(secondaryListItem);
             errorList.appendChild(buttonListItem);
-            revealHidden('errors')
+            revealHidden(['errors'])
         };
         function duplicateCheck(map) {
             console.log("checking for duplicates")
@@ -285,14 +292,67 @@
             };
             return buttonParts
         };
+        function delete_this_function() {
+            feedfile.map = exampleColumns;
+            determine_fields(exampleColumns)
+        }
+        function determine_fields(arr) {
+            arr.forEach((array_element, index) => {
+                fields.all.forEach(field_object =>
+                    field_object.matches.forEach(field_object_type => {
+                        if (field_object_type === array_element) {
+                            feedfile.map[index] = field_object.field_name
+                        };
+                    }));
+
+            })
+            console.log(feedfile)
+            check_required_fields()
+        }
+        function check_required_fields() {
+            let map = feedfile.map
+            fields.required.forEach(field => {
+                let x = '';
+                if (map.includes(field.field_name)) { }
+                else {
+                    let missing_field = field;
+                    console.log(missing_field)
+                    missing_field.back_up.forEach(potential_backup => {
+
+                        console.log(potential_backup)
+                    })
+                }
+
+                //temp for reference DELETE THIS SOON OR EXPERIENCE PROBLEMATIC ERRRORS
+                //                             if (arr.includes("strMediumImageURL") && arr.includes("strThumbnailURL")) {
+                //     arr[arr.includes('strMediumImageURL').index] = 'strLargeImageURL'
+                //     addNote("strLargeImageURL identifiers were not found or mapped. ",
+                //         "However, a Medium Image URL column was detected and used.")
+                // } else if (arr.includes("strMediumImageURL")) {
+                //     arr[arr.includes('strThumbnailImageURL').index] = 'strLargeImageURL';
+                //     addNote("strLargeImageURL identifiers were not found or mapped. ",
+                //         "However, a Thumbnail Image URL column was detected and used.")
+                // } else {
+                //     addError(missingField, "was not detected. ",
+                //         "An Alternative Solution, force the strLargeImageURL to be the Merchant's logo URL",
+                //         buttonConstruction("fieldReplace",
+                //             'strLargeImageURL',
+                //             'http://PretendCompany.com/images/logo.jpg'))
+
+                //temp for reference DELETE THIS SOON OR EXPERIENCE PROBLEMATIC ERRRORS               
+
+            })
+
+
+        }
+
         function checkRequiredFields(arr) {
             requiredFields.forEach(field => { // Alert if any required Fields are missing.
                 let x = '';
 
                 if (arr.includes(field.field)) { }
                 else {
-                    revealHidden('updateArray')
-                    console.log("LINE 288")
+                    revealHidden(['updateArray'])
                     let missingField = field.field
                     switch (missingField) {
                         //CONSIDER MOVING the logic from determinePotentialDepartments() into this switch.
@@ -370,7 +430,7 @@
                 addNote('no strAttributes were detected and mapped. Attribute Map is not neccessary')
             } else {
                 addNote('strAttributes were mapped in. The Attribution Map button is available to have an Attribute map coppied to your clipboard.  click "Copy Attribute Map"');
-                revealHidden('buttonAttCopy'); // unhide the Copy Attribute Map button
+                revealHidden(['buttonAttCopy']); // unhide the Copy Attribute Map button
             };
             return map
         };
@@ -395,16 +455,10 @@
                 console.log(allLines.length)
                 var validInput = allLines[0]
                 addNote(allLines.length + " rows detected")
-                if (validInput) { }
-                else {
-                    console.log('NOTHING in INPUT.  Using Test an internal example');
-                    var validInput = exampleColumns
-                    addNote('Nothing is in the input. Using test data from an internal example')
-                };
                 // BUILD ARRAYS TO WORK WITH
-                var merchantsArr = //Reference to the Merchant's actual dataset in an array
+                feedfile.merchant_layout = //Reference to the Merchant's actual dataset in an array
                     stringToArray(validInput).split(/\t/g);
-                var merchantRows = {
+                feedfile.data_rows = {
                     row1: stringToArray(allLines[1]).split(/\t/g),
                     row2: stringToArray(allLines[2]).split(/\t/g),
                     row3: stringToArray(allLines[3]).split(/\t/g),
@@ -412,7 +466,7 @@
                     row5: stringToArray(allLines[5]).split(/\t/g),
                     row6: stringToArray(allLines[6]).split(/\t/g),
                 }
-                console.log(merchantRows)
+                console.log(feedfile.data_rows)
                 var firstArray = //First step in building an array from Merchant Data (removing delimiters, any capitalizations and repetitive values)
                     validInput.toLowerCase()
                         .replaceAll("'", '')
@@ -427,21 +481,22 @@
                         .replaceAll('\r', '')
                         .split(/\t/g);
                 console.log(firstArray)
-                if (merchantsArr.indexOf("product" || "item")) {// quickly check to see if the Merchant used 'product' or 'item' to define the product name, and ensure its placed in the array
-                    let i = merchantsArr.indexOf("product");
-                    let j = merchantsArr.indexOf("item")
+                if (feedfile.merchant_layout.indexOf("product" || "item")) {// quickly check to see if the Merchant used 'product' or 'item' to define the product name, and ensure its placed in the array
+                    let i = feedfile.merchant_layout.indexOf("product");
+                    let j = feedfile.merchant_layout.indexOf("item")
                     firstArray[i] = 'name'; firstArray[j] = 'name';
                 }
-                var arrayMap = //The map that will eventually be converted into finished product
+                feedfile.map = //The map that will eventually be converted into finished product
                     new Array(firstArray.length)
-                // Run Fields
-                console.log(firstArray)
-                var deptCheck = determinePotentialDepartments(firstArray, arrayMap)
-                var requiredFieldMap = (determineRequiredFields(firstArray, arrayMap));
+                determine_fields(firstArray); //FIRST MAPPING STEP
+
+                // OLD METHOD FOR RUNNING FIELDS !? DO NOT DELETE YET! 
+                var deptCheck = determinePotentialDepartments(firstArray, feedfile.map)
+                var requiredFieldMap = (determineRequiredFields(firstArray, feedfile.map));
                 var additionalFieldMap = (determineOtherFields(firstArray, requiredFieldMap));
                 var attributefieldbuilderMap = (determineCommonStrAttributes(firstArray, additionalFieldMap));
                 var pipeMap = (checkRequiredFields(attributefieldbuilderMap));
-                revealHidden('buttonPipeCopy')
+                revealHidden(['buttonPipeCopy'])
                 duplicateCheck(pipeMap);
                 document.getElementById("pipeDisplay").innerHTML = pipeMap.toString().replaceAll(',', '|');
             };
@@ -450,9 +505,253 @@
             };
         };
         // DATAFEED FIELD ARRAYS
-        var exampleColumns = 'sku	item	image	price	link	description';
+        var exampleColumns = ['strProductSku, strProductId'];
         var exampleColumns2 = " 	Manufacturer Id	Brand Name	Product-Name	Long Description	Short Description	Category	SubCategory	Product Group	Thumb URL	Image URL	Buy Link	Keywords	Reviews		Sale Price	Brand Page Link	Brand Logo Image	Product Parent Grouping Id	Product Color	Product Size	Product Pattern	Product Material	Product Weight	Product Age Group	Product Gender	Product UPC	Product GTIN	Variants XML	Product GUID	Product Sale Price Effective Date	Product Availability	Product Visibility	Product Model Number	Product Quantity	Product Alternate Buy URL	Product Alternate Product ID	Department	Medium Image URL	Google Categorization	Item Based Commission";
         // List of potential fields. (all spaces, dashes, and the terms 'product' and 'item' removed, to reduce load, and keep things streamlined)
+        var fields = {
+            att_map: attributeMap = `<Fields>
+                <Field><name>strAttribute1</name><title>Parent Group ID</title><type>string</type></Field>
+
+                <Field><name>strAttribute2</name><title>Color</title><type>string</type></Field>
+
+                <Field><name>strAttribute3</name><title>Size</title><type>string</type></Field>
+
+                <Field><name>strAttribute4</name><title>Pattern</title><type>string</type></Field>
+
+                <Field><name>strAttribute5</name><title>Material</title><type>string</type></Field>
+
+                <Field><name>strAttribute6</name><title>Age Group</title><type>string</type></Field>
+
+                <Field><name>strAttribute7</name><title>Gender</title><type>string</type></Field>
+
+                <Field><name>strAttribute8</name><title>UPC</title><type>string</type></Field>
+
+                <Field><name>strAttribute9</name><title>Availability</title><type>string</type></Field>
+
+                <Field><name>strAttribute10</name><title>Google Product Category</title><type>string</type></Field>
+
+                <Field><name>strMediumImage</name><title>Medium Image URL</title><type>string</type></Field>
+
+                <Field><name>txtAttribute1</name><title>Variants XML</title><type>xml</type><compression>gz</compression></Field>
+
+                <Field><name>txtAttribute2</name><title>GTIN</title><type>string</type></Field>
+
+            </Fields>`,
+            required: [{
+                field_name: 'strDepartment',
+                matches: ['department', 'dept'],
+                priority: 1,
+                back_up: ['strAttribute10', 'strCategory', 'strSubCategory']
+
+            }, {
+                field_name: "strProductSKU",
+                matches: ['sku', 'id', 'number', 'idnumber'],
+                back_up: ['strAttribute1']
+            }, {
+                field_name: 'strProductName',
+                matches: ['name', 'title'],
+                back_up: ['N/A']
+            }, {
+                field_name: 'dblProductPrice',
+                matches: ['price', 'retailprice', 'retail'],
+                back_up: ['dblProductSalePrice']
+            }, {
+                field_name: 'strLargeImage',
+                matches: ['imageurl', 'image', 'imageurllarge', 'imagelink'],
+                back_up: ['strMediumImageURL', 'strThumbnailImageURL']
+            }, {
+                field_name: 'txtLongDescription',
+                matches: ['longdescription', 'description',],
+                back_up: ['txtShortDescription',]
+            }, {
+                field_name: 'strBuyURL',
+                matches: ['link', 'buylink', 'buyurl', 'url'],
+                back_up: ['N/A']
+            }
+            ],
+            all: [{
+                field_name: 'strDepartment',
+                matches: ['department', 'dept'],
+                priority: 1,
+            }, {
+                field_name: "strProductSKU",
+                matches: ['sku', 'id', 'number', 'idnumber'],
+            }, {
+                field_name: 'strProductName',
+                matches: ['name', 'title'],
+            }, {
+                field_name: 'dblProductPrice',
+                matches: ['price', 'retailprice', 'retail']
+            }, {
+                field_name: 'strLargeImage',
+                matches: ['imageurl', 'image', 'imageurllarge', 'imagelink']
+            }, {
+                field_name: 'txtLongDescription',
+                matches: ['longdescription', 'description',]
+            }, {
+                field_name: 'strBuyURL',
+                matches: ['link', 'buylink', 'buyurl', 'url']
+            }, {
+                field_name: 'strCategory',
+                matches: ['category'],
+                priority: 3,
+            }, {
+                field_name: 'strSubCategory',
+                matches: ['subcategory'],
+                priority: 4,
+            }, {
+                field_name: "strAttribute10",
+                matches: ['googlecategory', 'googlecategorization'],
+                priority: 2,
+            }, {
+                field_name: 'dblItemCommission',
+                matches: ['basedcommission', 'ibc', 'commission', 'commissionrate']
+            }, {
+                field_name: 'dblProductSalePrice',
+                matches: ['saleprice', 'sale']
+            }, {
+                field_name: 'strManufacturerPartNumber',
+                matches: ['manufacturerpartnumber', 'manufacturerid']
+            }, {
+                field_name: 'strBrandName',
+                matches: ['brandname', 'brand']
+            }, {
+                field_name: 'strBrandURL',
+                matches: ['brandurl', 'brandpagelink', 'brandpage']
+            }, {
+                field_name: 'strBrandLogoImage',
+                matches: ['brandlogoimage', 'brandimage', 'brandimageurl', 'logourl', 'logolink', 'logoimage', 'logourl']
+            }, {
+                field_name: 'strManufacturerPartNumber',
+                matches: ['manufacturerpartnumber', 'mpn']
+            }, {
+                field_name: 'strThumbnailURL',
+                matches: ['thumbnailurl', 'thumbnail', 'thumbnaillink', 'thumbnailimage', 'imageurlsmall', 'imagesmall', 'thumblink', 'thumbimage', 'thumburl']
+            }, {
+                field_name: 'strMediumImageURL',
+                matches: ['mediumimageurl', 'mediumimage', 'mediumimagelink', 'imageurlmedium']
+            }, {
+                field_name: 'txtShortDescription',
+                matches: ['shortdescription']
+            }, {
+                field_name: 'strAttribute1',
+                valueTitle: 'Product Parent Grouping Id',
+                type: '<type>string</type>',
+                matches: ['parentgroup', 'parentgroupid', 'groupid']
+            }, {
+                field_name: 'strAttribute2',
+                valueTitle: 'Product Color',
+                type: '<type>string</type>',
+                matches: ['color']
+            }, {
+                field_name: 'strAttribute3',
+                valueTitle: 'Product Size',
+                type: '<type>string</type>',
+                matches: ['size',]
+            }, {
+                field_name: 'strAttribute4',
+                valueTitle: 'Product Pattern',
+                type: '<type>string</type>',
+                matches: ['pattern', 'style']
+            }, {
+                field_name: 'strAttribute5',
+                valueTitle: 'Product Material',
+                type: '<type>string</type>',
+                matches: ['material']
+            }, {
+                field_name: 'strAttribute6',
+                valueTitle: 'Product Age Group',
+                type: '<type>string</type>',
+                matches: ['agegroup', 'age']
+            }, {
+                field_name: 'strAttribute7',
+                valueTitle: 'Product Gender',
+                type: '<type>string</type>',
+                matches: ['gender']
+            }, {
+                field_name: 'strAttribute8',
+                valueTitle: 'Product UPC',
+                type: '<type>string</type>',
+                matches: ['upc']
+            }, {
+                field_name: 'strAttribute9',
+                valueTitle: 'Product Availability',
+                type: '<type>string</type>',
+                matches: ['availability', 'available']
+            }, {
+                field_name: 'txtAttribute1',
+                valueTitle: 'Variants XML',
+                type: '<type>xml</type><compression>gz</compression>',
+                matches: ['xml', 'variantxml', 'variants', 'variantsxml']
+            }, {
+                field_name: 'txtAttribute2',
+                valueTitle: 'GTIN',
+                type: '<type>string</type>',
+                matches: ['gtin']
+
+            }
+            ],
+            variants: [{
+                variant: 'variant-sku',
+                matches: 'sku'
+            },
+            {
+                variant: 'variant-upc',
+                matches: 'upc'
+            },
+            {
+                variant: 'variant-vendor_sku',
+                matches: 'vendor_sku'
+            },
+            {
+                variant: 'variant-size',
+                matches: 'size'
+            },
+            {
+                variant: 'variant-color',
+                matches: 'color'
+            },
+            {
+                variant: 'Variant-style',
+                matches: 'style'
+            },
+            {
+                variant: 'Variant-retail_price',
+                matches: 'retail_price'
+            },
+            {
+                variant: 'Variant-sale_price',
+                matches: 'sale_price'
+            },
+            {
+                variant: 'variant-image_url',
+                matches: 'image_url'
+            },
+            {
+                variant: 'variant-detail_url',
+                matches: 'detail_url'
+            },
+            {
+                variant: 'variant-action_url',
+                matches: 'action_url'
+            },
+            {
+                variant: 'variant-available',
+                matches: 'available'
+            },
+            {
+                variant: 'variant-season',
+                matches: 'season'
+            },
+            {
+                variant: 'variant-vendor_sku',
+                matches: 'vendor_sku'
+            },
+            {
+                variant: 'Variant-year',
+                matches: 'year'
+            },],
+        }
         var deptArrElements = [{
             field: 'strDepartment',
             matches: ['department', 'dept'],
@@ -615,7 +914,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
         integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
         crossorigin="anonymous"></script>
-    <script src="app.js"></script>
+    <!-- <script src="app.js"></script> -->
 </body>
 
 </html>
