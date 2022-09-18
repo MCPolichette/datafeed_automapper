@@ -126,6 +126,8 @@
             merchant_layout: [],
             data_rows: [],
         };
+        var BreakException = {}; // To HALT .js forEach functions.
+
         // !? All new scripting above this line!
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Global field arrays, and attribute maps are listed at the bottom of this script.
@@ -309,7 +311,8 @@
             console.log(feedfile)
             check_required_fields()
         }
-        function check_required_fields() {
+        function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFunction.  The answer is in there
+
             let map = feedfile.map
             fields.required.forEach(field => {
                 let x = '';
@@ -317,18 +320,25 @@
                 else {
                     let missing_field = field;
                     console.log(missing_field)
-                    missing_field.back_up.forEach(potential_back_up => {
-                        map.forEach(mapped_field => {
-                            if (mapped_field == potential_back_up) {
-                                map[map.indexOf(potential_back_up)] = missing_field.field_name
-                            }
-                            else {
-                                console.log("OOH BOY, If this doesn't work.. we got some brainstorming to do. ")
-                                console.log(mapped_field, potential_back_up, field)
-                            }
+                    missing_field.back_up.some(function (el) {
+                        missing_field.back_up.forEach(potential_back_up => {
+                            map.forEach(mapped_field => {
+                                if (mapped_field == potential_back_up) {
+                                    map[map.indexOf(potential_back_up)] = missing_field.field_name;
+                                    console.log(el, missing_field, mapped_field, potential_back_up)
+
+                                    return el === mapped_field
+                                }
+                                else {
+                                    console.log(mapped_field, 'Did not match', potential_back_up, field)
+                                }
+                            })
+                            console.log(potential_back_up)
                         })
-                        console.log(potential_back_up)
+
                     })
+
+
                 } console.log(feedfile)
 
 
@@ -515,7 +525,7 @@
             };
         };
         // DATAFEED FIELD ARRAYS
-        var exampleColumns = ['strProductSku', 'strProductId', 'strSubCategory'];
+        var exampleColumns = ['strProductSku', 'strProductId', 'strCategory', 'txtShortDescription', 'strSubCategory'];
         var exampleColumns2 = " 	Manufacturer Id	Brand Name	Product-Name	Long Description	Short Description	Category	SubCategory	Product Group	Thumb URL	Image URL	Buy Link	Keywords	Reviews		Sale Price	Brand Page Link	Brand Logo Image	Product Parent Grouping Id	Product Color	Product Size	Product Pattern	Product Material	Product Weight	Product Age Group	Product Gender	Product UPC	Product GTIN	Variants XML	Product GUID	Product Sale Price Effective Date	Product Availability	Product Visibility	Product Model Number	Product Quantity	Product Alternate Buy URL	Product Alternate Product ID	Department	Medium Image URL	Google Categorization	Item Based Commission";
         // List of potential fields. (all spaces, dashes, and the terms 'product' and 'item' removed, to reduce load, and keep things streamlined)
         var fields = {
@@ -552,7 +562,6 @@
                 matches: ['department', 'dept'],
                 priority: 1,
                 back_up: ['strAttribute10', 'strCategory', 'strSubCategory']
-
             }, {
                 field_name: "strProductSKU",
                 matches: ['sku', 'id', 'number', 'idnumber'],
