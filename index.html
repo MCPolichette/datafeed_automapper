@@ -125,7 +125,114 @@
             map: [],
             merchant_layout: [],
             data_rows: [],
+            variant_map: [],
         };
+
+        function delete_this_function() {
+            feedfile.map = exampleColumns;
+            determine_fields(exampleColumns)
+        }
+        function determine_fields(arr) {
+            console.log(arr)
+            arr.forEach((array_element, index) => {
+                fields.all.forEach(field_object =>
+                    field_object.matches.forEach(field_object_type => {
+                        if (field_object_type === array_element) {
+                            console.log("Match")
+                            feedfile.map[index] = field_object.field_name;
+                            console.log(field_object.variant)
+                            feedfile.variant_map[index] = field_object.variant
+                            console.log(feedfile.variant_map[index])
+                            console.log(feedfile.variant_map)
+                            if (field_object.variant) {
+                                feedfile.variant_map[index] = field_object.variant;
+                                console.log(feedfile.variant_map)
+                            }
+                            else { feedfile.variant_map[index] = ''; }
+                        }
+                        else {
+                            console.log("Does this fire every time?")
+                            feedfile.map[index] = '';
+
+                        }
+                    }));
+            })
+            console.log(feedfile)
+            check_required_fields()
+        };
+        function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFunction.  The answer is in there
+            let required = fields.required;
+            let map = feedfile.map;
+            let stop_for_loop = 100; //This is a totally Lazy way, but super successfull way to do this. 
+            required.forEach((field, i) => {
+                for (j = 0; j < map.length; j++) {
+                    console.log(map[j])
+                    if (map[j].field_name == required[i].field_name) {
+                        console.log(required[i].field_name, " is present.")
+                    }
+                    else {
+                        for (k = 0; k < required[i].back_up.length; k++) {
+                            for (x = 0; x < map.length; x++) {
+                                if (required[i].back_up[k] == map[x]) {
+                                    feedfile.map[x] = required[i].field_name;
+                                    if (required[i].field_name == 'strLargeImage') {
+                                        feedfile.variant_map[i] = 'variant-imag_url'
+                                    };
+                                    k = stop_for_loop;
+                                    j = stop_for_loop;
+                                    x = stop_for_loop;
+                                };
+                            };
+                        };
+                    };
+                };
+                console.log(feedfile);
+            });
+
+        };
+        function duplicate_check(map) {
+            console.log("checking for duplicates")
+            for (i = 0; i < map.length; i++) {
+                for (j = i + 1; j < map.length; j++) {
+                    if (map[i] == map[j]) {
+                        addError("Found a duplicate match for " + map[i], " at index's " + i + " & " + j + " one will need to be deleted");
+                        return;
+                    };
+                };
+            };
+        };
+        function check_variant_mapping(arr) {
+            arr.forEach((array_element, index) => {
+                fields.variants.forEach(field_object =>
+                    field_object.matches.forEach(field_object_type => {
+                        if (field_object_type === array_element) {
+                            feedfile.variant_map[index] = field_object.field_name
+                        };
+                    }));
+            })
+            console.log(feedfile)
+            check_required_fields()
+
+
+        };
+        function variant_mapping() {
+
+        };
+        function build_mapped_table() {
+
+        };
+        function build_pipe_display() {
+
+        };
+        function add_note() {
+
+        };
+        function add_error() {
+
+        };
+
+
+
         // !? All new scripting above this line!
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Global field arrays, and attribute maps are listed at the bottom of this script.
@@ -292,69 +399,6 @@
             };
             return buttonParts
         };
-        function delete_this_function() {
-            feedfile.map = exampleColumns;
-            determine_fields(exampleColumns)
-        }
-        function determine_fields(arr) {
-            arr.forEach((array_element, index) => {
-                fields.all.forEach(field_object =>
-                    field_object.matches.forEach(field_object_type => {
-                        if (field_object_type === array_element) {
-                            feedfile.map[index] = field_object.field_name
-                        };
-                    }));
-
-            })
-            console.log(feedfile)
-            check_required_fields()
-        }
-        function check_required_fields() {
-            let map = feedfile.map
-            fields.required.forEach(field => {
-                let x = '';
-                if (map.includes(field.field_name)) { }
-                else {
-                    let missing_field = field;
-                    console.log(missing_field)
-                    missing_field.back_up.forEach(potential_back_up => {
-                        map.forEach(mapped_field => {
-                            if (mapped_field == potential_back_up) {
-                                map[map.indexOf(potential_back_up)] = missing_field.field_name
-                            }
-                            else {
-                                console.log("OOH BOY, If this doesn't work.. we got some brainstorming to do. ")
-                                console.log(mapped_field, potential_back_up, field)
-                            }
-                        })
-                        console.log(potential_back_up)
-                    })
-                } console.log(feedfile)
-
-
-
-                //temp for reference DELETE THIS SOON OR EXPERIENCE PROBLEMATIC ERRRORS
-                //                             if (arr.includes("strMediumImageURL") && arr.includes("strThumbnailURL")) {
-                //     arr[arr.includes('strMediumImageURL').index] = 'strLargeImageURL'
-                //     addNote("strLargeImageURL identifiers were not found or mapped. ",
-                //         "However, a Medium Image URL column was detected and used.")
-                // } else if (arr.includes("strMediumImageURL")) {
-                //     arr[arr.includes('strThumbnailImageURL').index] = 'strLargeImageURL';
-                //     addNote("strLargeImageURL identifiers were not found or mapped. ",
-                //         "However, a Thumbnail Image URL column was detected and used.")
-                // } else {
-                //     addError(missingField, "was not detected. ",
-                //         "An Alternative Solution, force the strLargeImageURL to be the Merchant's logo URL",
-                //         buttonConstruction("fieldReplace",
-                //             'strLargeImageURL',
-                //             'http://PretendCompany.com/images/logo.jpg'))
-
-                //temp for reference DELETE THIS SOON OR EXPERIENCE PROBLEMATIC ERRRORS               
-
-            })
-
-
-        }
 
         function checkRequiredFields(arr) {
             requiredFields.forEach(field => { // Alert if any required Fields are missing.
@@ -496,12 +540,12 @@
                     let j = feedfile.merchant_layout.indexOf("item")
                     firstArray[i] = 'name'; firstArray[j] = 'name';
                 }
-                feedfile.map = //The map that will eventually be converted into finished product
-                    new Array(firstArray.length)
+                feedfile.variant_map = new Array(firstArray.length);
+                feedfile.map = new Array(firstArray.length);
                 determine_fields(firstArray); //FIRST MAPPING STEP
 
                 // OLD METHOD FOR RUNNING FIELDS !? DO NOT DELETE YET! 
-                var deptCheck = determinePotentialDepartments(firstArray, feedfile.map)
+                var deptCheck = determinePotentialDepartments(firstArray, feedfile.map);
                 var requiredFieldMap = (determineRequiredFields(firstArray, feedfile.map));
                 var additionalFieldMap = (determineOtherFields(firstArray, requiredFieldMap));
                 var attributefieldbuilderMap = (determineCommonStrAttributes(firstArray, additionalFieldMap));
@@ -515,7 +559,7 @@
             };
         };
         // DATAFEED FIELD ARRAYS
-        var exampleColumns = ['strProductSku', 'strProductId', 'strSubCategory'];
+        var exampleColumns = ['strProductSku', 'strProductId', 'strCategory', 'txtShortDescription', 'strSubCategory'];
         var exampleColumns2 = " 	Manufacturer Id	Brand Name	Product-Name	Long Description	Short Description	Category	SubCategory	Product Group	Thumb URL	Image URL	Buy Link	Keywords	Reviews		Sale Price	Brand Page Link	Brand Logo Image	Product Parent Grouping Id	Product Color	Product Size	Product Pattern	Product Material	Product Weight	Product Age Group	Product Gender	Product UPC	Product GTIN	Variants XML	Product GUID	Product Sale Price Effective Date	Product Availability	Product Visibility	Product Model Number	Product Quantity	Product Alternate Buy URL	Product Alternate Product ID	Department	Medium Image URL	Google Categorization	Item Based Commission";
         // List of potential fields. (all spaces, dashes, and the terms 'product' and 'item' removed, to reduce load, and keep things streamlined)
         var fields = {
@@ -549,156 +593,169 @@
             </Fields>`,
             required: [{
                 field_name: 'strDepartment',
-                matches: ['department', 'dept'],
-                priority: 1,
                 back_up: ['strAttribute10', 'strCategory', 'strSubCategory']
-
             }, {
                 field_name: "strProductSKU",
-                matches: ['sku', 'id', 'number', 'idnumber'],
                 back_up: ['strAttribute1']
             }, {
                 field_name: 'strProductName',
-                matches: ['name', 'title'],
                 back_up: ['N/A']
             }, {
                 field_name: 'dblProductPrice',
-                matches: ['price', 'retailprice', 'retail'],
                 back_up: ['dblProductSalePrice']
             }, {
                 field_name: 'strLargeImage',
-                matches: ['imageurl', 'image', 'imageurllarge', 'imagelink'],
                 back_up: ['strMediumImageURL', 'strThumbnailImageURL']
             }, {
                 field_name: 'txtLongDescription',
-                matches: ['longdescription', 'description',],
                 back_up: ['txtShortDescription',]
             }, {
                 field_name: 'strBuyURL',
-                matches: ['link', 'buylink', 'buyurl', 'url'],
                 back_up: ['N/A']
             }
             ],
             all: [{
                 field_name: 'strDepartment',
                 matches: ['department', 'dept'],
-                priority: 1,
+                variant: false
             }, {
                 field_name: "strProductSKU",
                 matches: ['sku', 'id', 'number', 'idnumber'],
+                variant: false
             }, {
                 field_name: 'strProductName',
                 matches: ['name', 'title'],
+                variant: false
             }, {
                 field_name: 'dblProductPrice',
-                matches: ['price', 'retailprice', 'retail']
+                matches: ['price', 'retailprice', 'retail'],
+                variant: 'variant-retail_price'
             }, {
                 field_name: 'strLargeImage',
-                matches: ['imageurl', 'image', 'imageurllarge', 'imagelink']
+                matches: ['imageurl', 'image', 'imageurllarge', 'imagelink'],
+                variant: 'variant-image_url'
             }, {
                 field_name: 'txtLongDescription',
-                matches: ['longdescription', 'description',]
+                matches: ['longdescription', 'description',],
+                variant: false
             }, {
                 field_name: 'strBuyURL',
-                matches: ['link', 'buylink', 'buyurl', 'url']
+                matches: ['link', 'buylink', 'buyurl', 'url'],
+                variant: 'variant-detail_url'
             }, {
                 field_name: 'strCategory',
                 matches: ['category'],
-                priority: 3,
+                variant: false
             }, {
                 field_name: 'strSubCategory',
                 matches: ['subcategory'],
-                priority: 4,
+                variant: false
             }, {
                 field_name: "strAttribute10",
                 matches: ['googlecategory', 'googlecategorization'],
-                priority: 2,
+                variant: false
             }, {
                 field_name: 'dblItemCommission',
-                matches: ['basedcommission', 'ibc', 'commission', 'commissionrate']
+                matches: ['basedcommission', 'ibc', 'commission', 'commissionrate'],
+                variant: false
             }, {
                 field_name: 'dblProductSalePrice',
-                matches: ['saleprice', 'sale']
+                matches: ['saleprice', 'sale'],
+                variant: 'variant-sale_price'
             }, {
                 field_name: 'strManufacturerPartNumber',
-                matches: ['manufacturerpartnumber', 'manufacturerid']
+                matches: ['manufacturerpartnumber', 'manufacturerid', 'mpn'],
+                variant: 'variant-vendor_sku'
             }, {
                 field_name: 'strBrandName',
-                matches: ['brandname', 'brand']
+                matches: ['brandname', 'brand'],
+                variant: false
             }, {
                 field_name: 'strBrandURL',
-                matches: ['brandurl', 'brandpagelink', 'brandpage']
+                matches: ['brandurl', 'brandpagelink', 'brandpage'],
+                variant: false
             }, {
                 field_name: 'strBrandLogoImage',
-                matches: ['brandlogoimage', 'brandimage', 'brandimageurl', 'logourl', 'logolink', 'logoimage', 'logourl']
-            }, {
-                field_name: 'strManufacturerPartNumber',
-                matches: ['manufacturerpartnumber', 'mpn']
+                matches: ['brandlogoimage', 'brandimage', 'brandimageurl', 'logourl', 'logolink', 'logoimage', 'logourl'],
+                variant: false
             }, {
                 field_name: 'strThumbnailURL',
-                matches: ['thumbnailurl', 'thumbnail', 'thumbnaillink', 'thumbnailimage', 'imageurlsmall', 'imagesmall', 'thumblink', 'thumbimage', 'thumburl']
+                matches: ['thumbnailurl', 'thumbnail', 'thumbnaillink', 'thumbnailimage', 'imageurlsmall', 'imagesmall', 'thumblink', 'thumbimage', 'thumburl'],
+                variant: false
             }, {
                 field_name: 'strMediumImageURL',
-                matches: ['mediumimageurl', 'mediumimage', 'mediumimagelink', 'imageurlmedium']
+                matches: ['mediumimageurl', 'mediumimage', 'mediumimagelink', 'imageurlmedium'],
+                variant: false
             }, {
                 field_name: 'txtShortDescription',
                 matches: ['shortdescription']
+                , variant: false
             }, {
                 field_name: 'strAttribute1',
                 valueTitle: 'Product Parent Grouping Id',
                 type: '<type>string</type>',
-                matches: ['parentgroup', 'parentgroupid', 'groupid']
+                matches: ['parentgroup', 'parentgroupid', 'groupid'],
+                variant: 'variant-sku'
             }, {
                 field_name: 'strAttribute2',
                 valueTitle: 'Product Color',
                 type: '<type>string</type>',
-                matches: ['color']
+                matches: ['color'],
+                variant: 'variant-color'
             }, {
                 field_name: 'strAttribute3',
                 valueTitle: 'Product Size',
                 type: '<type>string</type>',
-                matches: ['size',]
+                matches: ['size',],
+                variant: 'variant-size'
             }, {
                 field_name: 'strAttribute4',
                 valueTitle: 'Product Pattern',
                 type: '<type>string</type>',
-                matches: ['pattern', 'style']
+                matches: ['pattern', 'style'],
+                variant: 'variant-style'
             }, {
                 field_name: 'strAttribute5',
                 valueTitle: 'Product Material',
                 type: '<type>string</type>',
-                matches: ['material']
+                matches: ['material'],
+                variant: false
             }, {
                 field_name: 'strAttribute6',
                 valueTitle: 'Product Age Group',
                 type: '<type>string</type>',
-                matches: ['agegroup', 'age']
+                matches: ['agegroup', 'age'],
+                variant: false
             }, {
                 field_name: 'strAttribute7',
                 valueTitle: 'Product Gender',
                 type: '<type>string</type>',
-                matches: ['gender']
+                matches: ['gender'],
+                variant: false
             }, {
                 field_name: 'strAttribute8',
                 valueTitle: 'Product UPC',
                 type: '<type>string</type>',
-                matches: ['upc']
+                matches: ['upc'],
+                variant: 'variant-upc'
             }, {
                 field_name: 'strAttribute9',
                 valueTitle: 'Product Availability',
                 type: '<type>string</type>',
-                matches: ['availability', 'available']
+                matches: ['availability', 'available'],
+                variant: false
             }, {
                 field_name: 'txtAttribute1',
                 valueTitle: 'Variants XML',
                 type: '<type>xml</type><compression>gz</compression>',
-                matches: ['xml', 'variantxml', 'variants', 'variantsxml']
+                matches: ['xml', 'variantxml', 'variants', 'variantsxml'],
+                variant: false
             }, {
                 field_name: 'txtAttribute2',
                 valueTitle: 'GTIN',
                 type: '<type>string</type>',
-                matches: ['gtin']
-
+                matches: ['gtin'],
+                variant: false
             }
             ],
             variants: [{
@@ -711,7 +768,7 @@
             },
             {
                 variant: 'variant-vendor_sku',
-                matches: 'vendor_sku'
+                matches: 'vendorsku'
             },
             {
                 variant: 'variant-size',
@@ -727,23 +784,23 @@
             },
             {
                 variant: 'Variant-retail_price',
-                matches: 'retail_price'
+                matches: 'retailprice'
             },
             {
                 variant: 'Variant-sale_price',
-                matches: 'sale_price'
+                matches: 'saleprice'
             },
             {
                 variant: 'variant-image_url',
-                matches: 'image_url'
+                matches: 'imageurl'
             },
             {
                 variant: 'variant-detail_url',
-                matches: 'detail_url'
+                matches: 'detailurl'
             },
             {
                 variant: 'variant-action_url',
-                matches: 'action_url'
+                matches: 'actionurl'
             },
             {
                 variant: 'variant-available',
@@ -755,7 +812,7 @@
             },
             {
                 variant: 'variant-vendor_sku',
-                matches: 'vendor_sku'
+                matches: 'vendorsku'
             },
             {
                 variant: 'Variant-year',
