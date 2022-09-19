@@ -312,58 +312,41 @@
             check_required_fields()
         }
         function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFunction.  The answer is in there
+            let required = fields.required;
+            let map = feedfile.map;
+            let stop_for_loop = 100; //This is a totally Lazy way, but super successfull way to do this. 
+            required.forEach((field, i) => {
+                for (j = 0; j < map.length; j++) {
+                    if (map[j].field_name == required[i].field_name) {
+                        console.log(required[i].field_name, " is present.")
+                    }
+                    else {
+                        for (k = 0; k < required[i].back_up.length; k++) {
+                            for (x = 0; x < map.length; x++) {
+                                if (required[i].back_up[k] == map[x]) {
+                                    map[x] = required[i].field_name;
+                                    k = stop_for_loop;
+                                    j = stop_for_loop;
+                                    x = stop_for_loop;
+                                };
+                            };
+                        };
+                    };
+                };
+                console.log(map);
+            });
 
-            let map = feedfile.map
-            fields.required.forEach(field => {
-                let x = '';
-                if (map.includes(field.field_name)) { }
-                else {
-                    let missing_field = field;
-                    console.log(missing_field)
-                    missing_field.back_up.some(function (el) {
-                        missing_field.back_up.forEach(potential_back_up => {
-                            map.forEach(mapped_field => {
-                                if (mapped_field == potential_back_up) {
-                                    map[map.indexOf(potential_back_up)] = missing_field.field_name;
-                                    console.log(el, missing_field, mapped_field, potential_back_up)
-
-                                    return el === mapped_field
-                                }
-                                else {
-                                    console.log(mapped_field, 'Did not match', potential_back_up, field)
-                                }
-                            })
-                            console.log(potential_back_up)
-                        })
-
-                    })
-
-
-                } console.log(feedfile)
-
-
-
-                //temp for reference DELETE THIS SOON OR EXPERIENCE PROBLEMATIC ERRRORS
-                //                             if (arr.includes("strMediumImageURL") && arr.includes("strThumbnailURL")) {
-                //     arr[arr.includes('strMediumImageURL').index] = 'strLargeImageURL'
-                //     addNote("strLargeImageURL identifiers were not found or mapped. ",
-                //         "However, a Medium Image URL column was detected and used.")
-                // } else if (arr.includes("strMediumImageURL")) {
-                //     arr[arr.includes('strThumbnailImageURL').index] = 'strLargeImageURL';
-                //     addNote("strLargeImageURL identifiers were not found or mapped. ",
-                //         "However, a Thumbnail Image URL column was detected and used.")
-                // } else {
-                //     addError(missingField, "was not detected. ",
-                //         "An Alternative Solution, force the strLargeImageURL to be the Merchant's logo URL",
-                //         buttonConstruction("fieldReplace",
-                //             'strLargeImageURL',
-                //             'http://PretendCompany.com/images/logo.jpg'))
-
-                //temp for reference DELETE THIS SOON OR EXPERIENCE PROBLEMATIC ERRRORS               
-
-            })
-
-
+        };
+        function duplicate_check(map) {
+            console.log("checking for duplicates")
+            for (i = 0; i < map.length; i++) {
+                for (j = i + 1; j < map.length; j++) {
+                    if (map[i] == map[j]) {
+                        addError("Found a duplicate match for " + map[i], " at index's " + i + " & " + j + " one will need to be deleted");
+                        return;
+                    }
+                }
+            }
         }
 
         function checkRequiredFields(arr) {
