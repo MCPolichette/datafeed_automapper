@@ -56,26 +56,39 @@
             <div class='row'>
                 <div class="col-12">
                     <br>
+                    <div id='tableDisplay'>
+                        <div class="table-responsive">
+                            <table id="table_map" class="table table-sm table-bordered border-primary map_layout">
+                            </table>
+
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12">
+                    <br>
 
                     <div class="shadow p-3 mb-5 bg-body rounded">
-                        <p>Pipe Delimeted Map:</p>
-                        <strong id='pipeDisplay' class='mapView'></strong>
+                        <strong>
+                            <p id='pipe_display' class='mapView'>Pipe Delimeted Map:</p>
+                            <p id='variant_pipe_display' class='mapView'></p>
+                        </strong>
                     </div>
-
-                    <div id='tableDisplay'></div>
-                    <button type='button' id='buttonPipeCopy' onclick='copyToClipboard("pipeDisplay")'>
-                        Copy the Pipe Delimited Text
-                    </button>
-
-                    <button type='button' id='buttonAttCopy' onclick='copyToClipboard(attributeMap)'>
-                        Copy Attribute Map
-                    </button>
+                    <button id="variant-toggle" type="button" class="btn btn-primary btn-lg"
+                        onclick="variant_toggle()">Variant mapping is
+                        available - Click Here </button>
                     <hr>
-                    <div class="table-responsive">
-                        <table class="table">
-                            ...
-                        </table>
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button type="button" onclick='copyToClipboard("pipe_display")' class="btn btn-primary">Copy
+                            Primary Pipe Delimited Map</button>
+                        <button disabled type="button" id='copy_second_map'
+                            onclick='copyToClipboard("variant_pipe_display")' class="btn btn-primary">Copy Secondary
+                            Pipe Delimited Map</button>
+                        <button type="button" class="btn btn-primary" onclick='copyToClipboard(attributeMap)'>
+                            Copy Attribute Map </button>
                     </div>
+                    <hr>
                 </div>
             </div>
         </div>
@@ -126,7 +139,9 @@
             merchant_layout: [],
             data_rows: [],
             variant_map: [],
+            map_for_variants: []
         };
+        is_variant = false;
         allLines = [];
 
         function delete_this_function() {
@@ -141,23 +156,31 @@
                     field_object.matches.forEach(field_object_type => {
                         if (field_object_type === array_element) {
                             feedfile.map[index] = field_object.field_name;
+                            feedfile.map_for_variants[index] = field_object.field_name;
                             feedfile.variant_map[index] = field_object.variant
                             if (field_object.variant) {
                                 feedfile.variant_map[index] = field_object.variant;
                             }
                             else { feedfile.variant_map[index] = ''; }
-                        }
+                        };
                     }));
-
-            })
-            console.log(feedfile.map)
-            check_required_fields()
+            });
+            feedfile.map_for_variants = new Array(feedfile.map.length)
+            for (i = 0; i < feedfile.map_for_variants.length; i++) {
+                feedfile.map_for_variants[i] = feedfile.map[i]
+                if (feedfile.map_for_variants[i] == 'strProductSKU') {
+                    feedfile.map_for_variants[i] = 'strAttribute1'
+                    var t = i
+                } if ((feedfile.map_for_variants[i] == 'strAttribute1') && (t != i)) {
+                    feedfile.map_for_variants[i] = 'strProductSKU'
+                }
+            };
+            check_required_fields();
         };
         function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFunction.  The answer is in there
             let required = fields.required;
             let map = feedfile.map;
             let stop_for_loop = 100; //This is a totally Lazy way, but super successfull way to do this. 
-
             required.forEach((field, index) => {
                 if (map.includes(field.field_name)) {
                     console.log(field.field_name, " is present")
@@ -168,13 +191,13 @@
                             x = map.indexOf(field.back_up[i])
                             feedfile.map[x] = field.field_name;
                             i = stop_for_loop
-                        }
-                    }
-                }
-            })
+                        };
+                    };
+                };
+            });
             console.log(feedfile);
             build_pipe_display();
-            check_variant_mapping();
+            build_mapped_table("standard");
         };
         function duplicate_check(map) {
             console.log("checking for duplicates")
@@ -186,29 +209,77 @@
                     };
                 };
             };
-
         };
         function check_variant_mapping() {
             if (feedfile.map.includes("strAttribute1")) {
-                alert("Possible Variant Mapping")
-            }
-
-        }
-
-
-
-
-        function variant_mapping() {
-
-
-
+                is_variant = true
+                // reveal_hidden('variant-toggle')
+            };
         };
-        function build_mapped_table() {
 
+        function variant_toggle() {
+            if (is_variant) {
+                build_mapped_table('standard');
+                build_pipe_display('standard');
+                is_variant = false
+            } else {
+                build_mapped_table('variant');
+                build_pipe_display('variant');
+                is_variant = true
+            };
         };
-        function build_pipe_display() {
-            document.getElementById("pipeDisplay").innerHTML = feedfile.map.toString().replaceAll(',', '|');
 
+        function build_mapped_table(table_type) {
+            var table = document.getElementById("table_map");
+            table.innerHTML = ''
+            table.classList.add('vertical-align')
+            table.style.textAlign = 'center';
+            var tableHead = document.createElement('thead');
+            let merchant_row = table.insertRow(0);
+            let map_row = table.insertRow(1)
+            let merchant_title = merchant_row.insertCell(0).innerHTML = "Merchant's column format";
+            let map_title = map_row.insertCell(0).innerHTML = "Calculated Map:";
+            feedfile.merchant_layout.forEach((field, i) => {
+                let merchant_cell = merchant_row.insertCell(i + 1).innerHTML = field
+            });
+            switch (table_type) {
+                case 'variant':
+                    feedfile.map_for_variants.forEach((field, i) => {
+                        let map_cell = map_row.insertCell(i + 1).innerHTML = field
+                    });
+                    let variant_row = table.insertRow(2)
+                    let variant_title = variant_row.insertCell(0).innerHTML = "Variant Map:";
+                    feedfile.variant_map.forEach((field, i) => {
+                        let variant_cell = variant_row.insertCell(i + 1).innerHTML = field
+                    });
+                    build_pipe_display('variant')
+                    break
+                case 'standard':
+                    feedfile.map.forEach((field, i) => {
+                        let map_cell = map_row.insertCell(i + 1).innerHTML = field
+                        build_pipe_display('standard')
+                    });
+                    break
+            };
+        };
+        function build_pipe_display(type) {
+            let pipe_map = '';
+            let variant_pipe_map = '';
+            switch (type) {
+                case 'standard':
+
+                    pipe_map = feedfile.map.toString().replaceAll(',', '|');
+                    console.log('standard', pipe_map)
+                    break
+                case "variant":
+
+                    pipe_map = feedfile.map_for_variants.toString().replaceAll(',', '|');
+                    variant_pipe_map = feedfile.variant_map.toString().replaceAll(',', '|');
+                    console.log('variant', pipe_map)
+                    break
+            };
+            document.getElementById("pipe_display").innerHTML = pipe_map
+            document.getElementById('variant_pipe_display').innerHTML = variant_pipe_map
         };
         function add_note() {
 
@@ -216,13 +287,7 @@
         function add_error() {
 
         };
-
-
-
-        // !? All new scripting above this line!
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Global field arrays, and attribute maps are listed at the bottom of this script.
-        function revealHidden(arr) {//Reveals a hidden HTML element.
+        function reveal_hidden(arr) {//Reveals a hidden HTML element.
             arr.forEach(id => {
                 let element = document.getElementById(id);
                 if (element.hidden) {
@@ -238,6 +303,12 @@
                 };
             });
         };
+
+        // !? All new scripting above this line!
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Global field arrays, and attribute maps are listed at the bottom of this script.
+
+
         function copyToClipboard(id) {// Create a single text value, to clipboard
             let copy = '';
             if ((document.getElementById(id)) == null) {
@@ -292,89 +363,23 @@
                     if (map[i] == map[j]) {
                         addError("Found a duplicate match for " + map[i], " at index's " + i + " & " + j + " one will need to be deleted");
                         return;
-                    }
-                }
-            }
-        }
-
-        // Build Table Function
-        // Required Fields Function
-        function determinePotentialDepartments(arr, map) {
-            var potentialDepts = [];
-            arr.forEach((arrElement, i) => {
-                deptArrElements.forEach(fieldObject => fieldObject.matches.forEach(fieldObjectType => {
-                    if (fieldObjectType === arrElement) {
-                        map[i] = fieldObject.field
-                        potentialDepts.push({
-                            field: fieldObject.field,
-                            index: i
-                        })
-                    }
-                }
-                ))
-            });
-            function deptCheck(arr) {
-                // let deptFound = arr.find(item => item.field == 'strDepartment');
-                if (arr.find(item => item.field == 'strDepartment')) { }
-                else (arr.sort((a, b) => {
-                    return a.priority - b.priority;
-                    arr[0].field == 'strDepartment';
-                    arr[0].altOptions == ['strCategory', 'strSubCategory'];
-                    arr[1].field == 'strCategory';
-                    arr[1].altOptions == ['strSubCategory', 'strDepartment'];
-                    arr[2].field == 'strSubCategory'
-                    arr[2].altOptions == ['strCategory', 'strDepartment'];
-                }))
-                return arr;
+                    };
+                };
             };
-            function buildDeptSelection(object) { //FIRST STEP TO BUILDING A DYNAMIC FIELD CHANGER
-                return
-                `<select id='departmentTest1' name='departmentTest1'>
+        };
+
+
+        function buildDeptSelection(object) { //FIRST STEP TO BUILDING A DYNAMIC FIELD CHANGER
+            return
+            `<select id='departmentTest1' name='departmentTest1'>
                     <option value=`+ object.field + `>` + object.field + `</option>
                     <option value='blank'>''</option>
                     <option value=`+ object.altOptions[0] + `>` + object.altOptions[0] + `</option>
                     <option value=`+ object.altOptions[1] + `>` + object.altOptions[1] + `</option>
                     <option value=`+ object.altOptions[2] + `>` + object.altOptions[2] + `<option>        
                     </select><button id='updateDept`+ object.index + `'>Change</button>`
-            };
-            switch (potentialDepts.length) {
-                case 0:
-                    addError(
-                        'No Department column was detected.', ' An alternative solution, use the Field Builder Rule to force Department to "general" ',
-                        buttonConstruction(
-                            'missingDepartment', 'strDepartment', 'General'
-                        ))
-                    break
-                case 1:
-                    map[potentialDepts[0].index] = 'strDepartment';
-                    break
-                case 2:
-                    deptCheck(potentialDepts)
-                    map[potentialDepts[0].index] = 'strDepartment';
-                    map[potentialDepts[1].index] = 'strCategory';
-                    break
-                case 3:
-                    deptCheck(potentialDepts)
-                    map[potentialDepts[0].index] = 'strDepartment';
-                    map[potentialDepts[1].index] = 'strCategory';
-                    map[potentialDepts[2].index] = 'strSubCategory';
-                    break
-                case 4:  // no action!?  All potential fields are mapped as titled. CONSIDER : a note stating that all possible category titles were detected and mapped accordingly?
-                    break
-            }
-            return map
         };
-        function determineRequiredFields(arr, map) {
-            arr.forEach((firstArrayElement, index) => {
-                requiredFields.forEach(fieldObject => fieldObject.matches.forEach(fieldObjectType => {
-                    if (fieldObjectType === firstArrayElement) {
-                        map[index] = fieldObject.field;
-                    }
-                }
-                ))
-            })
-            return map
-        };
+
         function buttonConstruction(newError, newField, newReplace, newRegex, newReplaceWith) {
             let buttonParts = { //BUILDING Button OBject (parts).. for ERRORS
                 errorType: newError,
@@ -386,94 +391,6 @@
             return buttonParts
         };
 
-        function checkRequiredFields(arr) {
-            requiredFields.forEach(field => { // Alert if any required Fields are missing.
-                let x = '';
-
-                if (arr.includes(field.field)) { }
-                else {
-                    revealHidden(['updateArray'])
-                    let missingField = field.field
-                    switch (missingField) {
-                        //CONSIDER MOVING the logic from determinePotentialDepartments() into this switch.
-                        // CONSIDER using Variables to reduce duplicated texts.
-                        case 'strProductName':
-                            addError(missingField + ' was not detected, or mapped. ');
-                            break;
-                        case 'strProductSKU':
-                            addError(
-                                missingField + ' was not detected, or mapped.',
-                                'An Alternative Solution: force the Product SKUs to match the Product Name.',
-                                buttonConstruction("fieldReplace", "strProductSKU", "%%strProductName%%"))
-                            break;
-                        case 'dblProductPrice':
-                            addError(missingField + " was not detected, or mapped. ")
-                            break;
-                        case 'strLargeImageURL': //FIX THIS ERROR- NOT FIRING!?
-                            if (arr.includes("strMediumImageURL") && arr.includes("strThumbnailURL")) {
-                                arr[arr.includes('strMediumImageURL').index] = 'strLargeImageURL'
-                                addNote("strLargeImageURL identifiers were not found or mapped. ",
-                                    "However, a Medium Image URL column was detected and used.")
-                            } else if (arr.includes("strMediumImageURL")) {
-                                arr[arr.includes('strThumbnailImageURL').index] = 'strLargeImageURL';
-                                addNote("strLargeImageURL identifiers were not found or mapped. ",
-                                    "However, a Thumbnail Image URL column was detected and used.")
-                            } else {
-                                addError(missingField, "was not detected. ",
-                                    "An Alternative Solution, force the strLargeImageURL to be the Merchant's logo URL",
-                                    buttonConstruction("fieldReplace",
-                                        'strLargeImageURL',
-                                        'http://PretendCompany.com/images/logo.jpg'))
-                            }
-                            break;
-                        case 'txtLongDescription':
-                            //CONSIDER checking for a Small Description Field first.
-                            addError(
-                                missingField + " was not detected, or mapped.",
-                                "An Alternative Solution: force the Product SKUs to match the Product Name.",
-                                buttonConstruction("fieldReplace", missingField, "%%strProductName%%"))
-                            break;
-                        case 'strBuyURL':
-                            addError(
-                                missingField + " was not detected. ",
-                                "An Alternative Solution, force the strBuyURL to be the Merchant's primary URL",
-                                buttonConstruction('fieldReplace', 'strBuyURL', 'http://PretendCompany.com'))
-                            break;
-                    }
-
-                }
-            })
-            return arr
-            addError('Missing ' + field.field + ' Which is a required minimum field.', button);
-        };
-        function determineOtherFields(arr, map) {// Additional Column Layout Fields Function
-            arr.forEach((ArrayElement, index) => {
-                additionalFields.forEach(fieldObject => fieldObject.matches.forEach(fieldObjectType => {
-                    if (fieldObjectType === ArrayElement) {
-                        map[index] = fieldObject.field;
-                    }
-                }
-                ))
-            })
-            return map
-        };
-        function determineCommonStrAttributes(arr, map) { //Final Map of strAttributes
-            let att = false;
-            arr.forEach((ArrayElement, index) => {
-                commonStrAttributes.forEach(fieldObject => fieldObject.matches.forEach(fieldObjectType => {
-                    if (fieldObjectType === ArrayElement) {
-                        att = true;
-                    }
-                }))
-            })
-            if (att === false) {
-                addNote('no strAttributes were detected and mapped. Attribute Map is not neccessary')
-            } else {
-                addNote('strAttributes were mapped in. The Attribution Map button is available to have an Attribute map coppied to your clipboard.  click "Copy Attribute Map"');
-                revealHidden(['buttonAttCopy']); // unhide the Copy Attribute Map button
-            };
-            return map
-        };
         function stringToArray(string) {
             string
                 .toLowerCase()
@@ -531,6 +448,14 @@
                     let j = feedfile.merchant_layout.indexOf("item")
                     firstArray[i] = 'name'; firstArray[j] = 'name';
                 };
+                feedfile.variant_map = firstArray
+                feedfile.variant_map.forEach(x => {
+                    x = ''
+                })
+                feedfile.map_for_variants = firstArray
+                feedfile.map_for_variants.forEach(x => {
+                    x = ''
+                })
                 console.log(firstArray)
                 determine_fields(firstArray); //FIRST MAPPING STEP
             };
@@ -569,6 +494,7 @@
                 <Field><name>txtAttribute1</name><title>Variants XML</title><type>xml</type><compression>gz</compression></Field>
 
                 <Field><name>txtAttribute2</name><title>GTIN</title><type>string</type></Field>
+                <Field><name>txtAttribute3</name><title>Key Words</title><type>string</type></Field>
 
             </Fields>`,
             required: [{
@@ -601,7 +527,7 @@
             }, {
                 field_name: "strProductSKU",
                 matches: ['sku', 'id', 'number', 'idnumber'],
-                variant: ['strAttribute1']
+                variant: "variant-sku"
             }, {
                 field_name: 'strProductName',
                 matches: ['name', 'title'],
@@ -674,8 +600,8 @@
                 field_name: 'strAttribute1',
                 valueTitle: 'Product Parent Grouping Id',
                 type: '<type>string</type>',
-                matches: ['parentgroup', 'parentgroupid', 'groupid',],
-                variant: 'variant-sku'
+                matches: ['parentgroup', 'parentgroupid', 'groupid', 'group'],
+                variant: 'strProductSKU'
             }, {
                 field_name: 'strAttribute2',
                 valueTitle: 'Product Color',
@@ -736,8 +662,13 @@
                 type: '<type>string</type>',
                 matches: ['gtin'],
                 variant: false
-            }
-            ],
+            }, {
+                field_name: 'txtAttribute3',
+                valueTitle: 'Key Words',
+                type: '<type>string</type>',
+                matches: ['keywords'],
+                variant: false
+            }],
             variants: [{
                 variant: 'variant-sku',
                 matches: 'sku'
