@@ -63,24 +63,31 @@
 
 
                         </div>
-                        <button id="variant-toggle" type="button" class="btn btn-primary btn-lg"
-                            onclick="variant_toggle()">Variant mapping is available - Click Here </button>
+
                     </div>
                 </div>
                 <div class="col-12">
                     <br>
 
                     <div class="shadow p-3 mb-5 bg-body rounded">
-                        <p>Pipe Delimeted Map:</p>
-                        <strong id='pipeDisplay' class='mapView'></strong>
+                        <strong>
+                            <p id='pipe_display' class='mapView'>Pipe Delimeted Map:</p>
+                            <p id='variant_pipe_display' class='mapView'></p>
+                        </strong>
                     </div>
-                    <button type='button' id='buttonPipeCopy' onclick='copyToClipboard("pipeDisplay")'>
-                        Copy the Pipe Delimited Text
-                    </button>
-
-                    <button type='button' id='buttonAttCopy' onclick='copyToClipboard(attributeMap)'>
-                        Copy Attribute Map
-                    </button>
+                    <button id="variant-toggle" type="button" class="btn btn-primary btn-lg"
+                        onclick="variant_toggle()">Variant mapping is
+                        available - Click Here </button>
+                    <hr>
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button type="button" onclick='copyToClipboard("pipe_display")' class="btn btn-primary">Copy
+                            Primary Pipe Delimited Map</button>
+                        <button disabled type="button" id='copy_second_map'
+                            onclick='copyToClipboard("variant_pipe_display")' class="btn btn-primary">Copy Secondary
+                            Pipe Delimited Map</button>
+                        <button type="button" class="btn btn-primary" onclick='copyToClipboard(attributeMap)'>
+                            Copy Attribute Map </button>
+                    </div>
                     <hr>
                 </div>
             </div>
@@ -155,18 +162,19 @@
                                 feedfile.variant_map[index] = field_object.variant;
                             }
                             else { feedfile.variant_map[index] = ''; }
-                        }
+                        };
                     }));
             });
-            feedfile.map_for_variants.forEach(element => {
-                if (element == 'strProductSKU') {
-                    element = 'strAttribute1'
+            feedfile.map_for_variants = new Array(feedfile.map.length)
+            for (i = 0; i < feedfile.map_for_variants.length; i++) {
+                feedfile.map_for_variants[i] = feedfile.map[i]
+                if (feedfile.map_for_variants[i] == 'strProductSKU') {
+                    feedfile.map_for_variants[i] = 'strAttribute1'
+                    var t = i
+                } if ((feedfile.map_for_variants[i] == 'strAttribute1') && (t != i)) {
+                    feedfile.map_for_variants[i] = 'strProductSKU'
                 }
-                if (element == 'strAttribute1') {
-                    element = 'strProductSKU'
-                }
-            })
-            console.log(feedfile.map);
+            };
             check_required_fields();
         };
         function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFunction.  The answer is in there
@@ -210,24 +218,15 @@
         };
 
         function variant_toggle() {
-            variant_sku_index = feedfile.map.indexOf('strProductSKU')
-            variant_group_index = feedfile.map.indexOf('strAttribute1')
-            console.log(variant_group_index, variant_sku_index)
             if (is_variant) {
-                console.log(is_variant)
-                feedfile.map[variant_sku_index] = 'strAttribute1'
-                feedfile.map[variant_group_index] = 'strProductSKU'
-                console.log(feedfile.map[variant_sku_index])
+                build_mapped_table('standard');
+                build_pipe_display('standard');
                 is_variant = false
             } else {
-                console.log(is_variant)
-                feedfile.map[variant_sku_index] = 'strProductSKU'
-                feedfile.map[variant_group_index] = 'strAttribute1'
+                build_mapped_table('variant');
+                build_pipe_display('variant');
                 is_variant = true
             };
-            console.log(feedfile)
-            build_mapped_table();
-            build_pipe_display();
         };
 
         function build_mapped_table(table_type) {
@@ -253,18 +252,34 @@
                     feedfile.variant_map.forEach((field, i) => {
                         let variant_cell = variant_row.insertCell(i + 1).innerHTML = field
                     });
+                    build_pipe_display('variant')
                     break
                 case 'standard':
                     feedfile.map.forEach((field, i) => {
                         let map_cell = map_row.insertCell(i + 1).innerHTML = field
+                        build_pipe_display('standard')
                     });
                     break
             };
         };
-        function build_pipe_display() {
-            let pipe_map = document.getElementById("pipeDisplay").innerHTML
-            pipe_map = feedfile.map.toString().replaceAll(',', '|');
+        function build_pipe_display(type) {
+            let pipe_map = '';
+            let variant_pipe_map = '';
+            switch (type) {
+                case 'standard':
 
+                    pipe_map = feedfile.map.toString().replaceAll(',', '|');
+                    console.log('standard', pipe_map)
+                    break
+                case "variant":
+
+                    pipe_map = feedfile.map_for_variants.toString().replaceAll(',', '|');
+                    variant_pipe_map = feedfile.variant_map.toString().replaceAll(',', '|');
+                    console.log('variant', pipe_map)
+                    break
+            };
+            document.getElementById("pipe_display").innerHTML = pipe_map
+            document.getElementById('variant_pipe_display').innerHTML = variant_pipe_map
         };
         function add_note() {
 
@@ -348,10 +363,10 @@
                     if (map[i] == map[j]) {
                         addError("Found a duplicate match for " + map[i], " at index's " + i + " & " + j + " one will need to be deleted");
                         return;
-                    }
-                }
-            }
-        }
+                    };
+                };
+            };
+        };
 
 
         function buildDeptSelection(object) { //FIRST STEP TO BUILDING A DYNAMIC FIELD CHANGER
@@ -364,44 +379,7 @@
                     <option value=`+ object.altOptions[2] + `>` + object.altOptions[2] + `<option>        
                     </select><button id='updateDept`+ object.index + `'>Change</button>`
         };
-        switch (potentialDepts.length) {
-            case 0:
-                addError(
-                    'No Department column was detected.', ' An alternative solution, use the Field Builder Rule to force Department to "general" ',
-                    buttonConstruction(
-                        'missingDepartment', 'strDepartment', 'General'
-                    ))
-                break
-            case 1:
-                map[potentialDepts[0].index] = 'strDepartment';
-                break
-            case 2:
-                deptCheck(potentialDepts)
-                map[potentialDepts[0].index] = 'strDepartment';
-                map[potentialDepts[1].index] = 'strCategory';
-                break
-            case 3:
-                deptCheck(potentialDepts)
-                map[potentialDepts[0].index] = 'strDepartment';
-                map[potentialDepts[1].index] = 'strCategory';
-                map[potentialDepts[2].index] = 'strSubCategory';
-                break
-            case 4:  // no action!?  All potential fields are mapped as titled. CONSIDER : a note stating that all possible category titles were detected and mapped accordingly?
-                break
-        }
 
-
-        function determineRequiredFields(arr, map) {
-            arr.forEach((firstArrayElement, index) => {
-                requiredFields.forEach(fieldObject => fieldObject.matches.forEach(fieldObjectType => {
-                    if (fieldObjectType === firstArrayElement) {
-                        map[index] = fieldObject.field;
-                    }
-                }
-                ))
-            })
-            return map
-        };
         function buttonConstruction(newError, newField, newReplace, newRegex, newReplaceWith) {
             let buttonParts = { //BUILDING Button OBject (parts).. for ERRORS
                 errorType: newError,
