@@ -1,0 +1,29 @@
+ .mapView {
+     min-width: 500px;
+     height: 100%;
+     width: 100%;
+     min-height: 50px;
+     word-wrap: break-word;
+ }
+
+ dt {
+     font-weight: bold;
+     display: list-item;
+     list-style-type: disc;
+     list-style-position: inside;
+ }
+
+ .border {
+     border-style: dotted;
+     border-width: 1px;
+     border-color: red;
+
+ }
+
+ .mapNotes {
+     max-width: 100%;
+ }
+
+ .error {
+     color: red;
+ }
