@@ -48,11 +48,11 @@
     <div class='container d-flex flex-column min-vh-100 justify-content-center align-items-center'>
         <div class="row">
             <h4 class="justify-content-center">Mark's Automapper - variant edition</h4>
-            <button onclick="delete_this_function(exampleColumns)">Magic Test Button</button>
+            <!-- <button onclick="delete_this_function(exampleColumns)">Magic Test Button</button> -->
             <label for="formFileLg" class="form-label">Select downloaded Feed File</label>
             <input onchange="readFile(this)" class="form-control form-control-lg" id="formFileLg" type="file">
         </div>
-        <div class='container'>
+        <div class='container' hidden id="post_upload_display">
             <div class='row'>
                 <div class="col-12">
                     <br>
@@ -65,29 +65,65 @@
                         </div>
 
                     </div>
-                </div>
-                <div class="col-12">
-                    <br>
-
-                    <div class="shadow p-3 mb-5 bg-body rounded">
-                        <strong>
-                            <p id='pipe_display' class='mapView'>Pipe Delimeted Map:</p>
-                            <p id='variant_pipe_display' class='mapView'></p>
-                        </strong>
-                    </div>
                     <button id="variant-toggle" type="button" class="btn btn-primary btn-lg"
                         onclick="variant_toggle()">Variant mapping is
                         available - Click Here </button>
                     <hr>
-                    <div class="btn-group" role="group" aria-label="Basic example">
-                        <button type="button" onclick='copyToClipboard("pipe_display")' class="btn btn-primary">Copy
-                            Primary Pipe Delimited Map</button>
-                        <button disabled type="button" id='copy_second_map'
-                            onclick='copyToClipboard("variant_pipe_display")' class="btn btn-primary">Copy Secondary
-                            Pipe Delimited Map</button>
-                        <button type="button" class="btn btn-primary" onclick='copyToClipboard(attributeMap)'>
-                            Copy Attribute Map </button>
+                </div>
+                <div class="col-12">
+                    <br>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#staticBackdrop">
+                        Give Me the Pipe Delimited Map!
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Datafeed Map(s)</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="shadow p-3 mb-5 bg-body rounded">
+                                        <strong>
+                                            <p id='pipe_display' class='mapView'>Pipe Delimeted Map:</p>
+                                            <p id='variant_pipe_display' class='mapView'></p>
+                                        </strong>
+                                    </div>
+                                    <div class="btn-group" role="group" aria-label="Basic example">
+                                        <button type="button" onclick='copyToClipboard("pipe_display")'
+                                            class="btn btn-primary">Copy
+                                            Primary Pipe Delimited Map</button>
+                                        <button type="button" id='copy_second_map'
+                                            onclick='copyToClipboard("variant_pipe_display")'
+                                            class="btn disabled btn-primary">Copy Secondary
+                                            Pipe Delimited Map</button>
+                                        <button type="button" class="btn btn-primary"
+                                            onclick='copyToClipboard(attributeMap)'>
+                                            Copy Attribute Map </button>
+                                    </div>
+                                    <div id="secondary_mapping_image" class="disabled">
+                                        <p> Use image below to process the secondary map.</p>
+                                        <img class="img-fluid" src="./secondary_mapping_layout.png"
+                                            alt="mapping instructions">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+
+
                     <hr>
                 </div>
             </div>
@@ -95,39 +131,41 @@
 
 
         <hr>
-        <!-- <button type='button' id='buttonTable'  target='_blank'
-            onclick='window.location.href='https://spoti.fi/3wq9qIU;''>Table
-            Format</button> -->
-        <h4 id='updateArray'>Some required fields were not found. If it's obviously present in the Merchant's
-            feedfile, please update the fields in this HTML document</h4>
-        <h4>Notes</h4>
-        <dl id='mapNotes' class='mapNotes'></dl>
-        <div id=errors class='border'>
-            <h4>Errors</h4>
-            <dl id='mapErrors' class='mapNotes'></dl>
-        </div>
-        <div id='exampleBuildField'>
-            <h4>Example Field Builder</h4>
-            <tbody>
-                <tr>
-                    <td valign='top' align='right'><b>#1) Field: </b></td>
-                    <td valign='top' align='left'> <input size='20' maxlength='50' id='buildFieldName'
-                            type='text'><strong> = </strong><input size='53' maxlength='255' id='buildFieldFormula'
-                            type='text'><br></td>
-                </tr>
-                <tr>
-                    <td valign='top' align='right'><b>Regex search for </b></td>
-                    <td valign='top' align='left'> <input size='15' maxlength='255' id='buildFieldSearch'
-                            type='text'><strong> replace with </strong><input size='30' maxlength='255'
-                            id='buildFieldReplace' type='text'></td>
-                </tr>
-                <tr>
-                    <td valign='top' align='right'><b>Formatting: </b></td>
-                    <td valign='top' align='left'> <select id='buildFieldFormat'>
-                            <option value=''>None</option>
-                    </td>
-                </tr>
-            </tbody>
+        <button type='button' id='buttonTable' target='_blank' onclick='window.location.href='
+            https://spoti.fi/3wq9qIU;''>Table
+            Format</button>
+        <div hidden class='disabled'>
+            <h4 id='updateArray'>Some required fields were not found. If it's obviously present in the Merchant's
+                feedfile, please update the fields in this HTML document</h4>
+            <h4>Notes</h4>
+            <dl id='mapNotes' class='mapNotes'></dl>
+            <div id=errors class='border'>
+                <h4>Errors</h4>
+                <dl id='mapErrors' class='mapNotes'></dl>
+            </div>
+            <div id='exampleBuildField'>
+                <h4>Example Field Builder</h4>
+                <tbody>
+                    <tr>
+                        <td valign='top' align='right'><b>#1) Field: </b></td>
+                        <td valign='top' align='left'> <input size='20' maxlength='50' id='buildFieldName'
+                                type='text'><strong> = </strong><input size='53' maxlength='255' id='buildFieldFormula'
+                                type='text'><br></td>
+                    </tr>
+                    <tr>
+                        <td valign='top' align='right'><b>Regex search for </b></td>
+                        <td valign='top' align='left'> <input size='15' maxlength='255' id='buildFieldSearch'
+                                type='text'><strong> replace with </strong><input size='30' maxlength='255'
+                                id='buildFieldReplace' type='text'></td>
+                    </tr>
+                    <tr>
+                        <td valign='top' align='right'><b>Formatting: </b></td>
+                        <td valign='top' align='left'> <select id='buildFieldFormat'>
+                                <option value=''>None</option>
+                        </td>
+                    </tr>
+                </tbody>
+            </div>
         </div>
         </p>
     </div>
@@ -145,8 +183,13 @@
         allLines = [];
 
         function delete_this_function() {
-            feedfile.map = exampleColumns;
-            determine_fields(exampleColumns)
+            // !? WILL PLAY WITH THIS LATER WHEN CLEANING UP
+            // fetch('./data.json')
+            //     .then((response) => response.json())
+            //     .then((json) => console.log(json));
+            // ===========================================================
+            // feedfile.map = exampleColumns;
+            // determine_fields(exampleColumns)
         }
         function determine_fields(arr) {
             console.log(arr)
@@ -221,13 +264,16 @@
             if (is_variant) {
                 build_mapped_table('standard');
                 build_pipe_display('standard');
+                document.getElementById('copy_second_map').classList.add("disabled")
                 is_variant = false
             } else {
                 build_mapped_table('variant');
                 build_pipe_display('variant');
+                document.getElementById('copy_second_map').classList.remove("disabled")
                 is_variant = true
             };
         };
+
 
         function build_mapped_table(table_type) {
             var table = document.getElementById("table_map");
@@ -261,6 +307,7 @@
                     });
                     break
             };
+            reveal_hidden(['post_upload_display'])
         };
         function build_pipe_display(type) {
             let pipe_map = '';
@@ -732,6 +779,7 @@
         }
 
     </script>
+    <script type="text/javascript" src="data.json"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
         integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
         crossorigin="anonymous"></script>
