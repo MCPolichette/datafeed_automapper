@@ -25,4 +25,4 @@ A bootstrap5-based tool to automatically map merchant datafeeds.
     - [x] method for identifying potential variant mapped feeds.
     - [x] adding a variant map row to the table display.
     - [ ] run some sort of group ID validation.
-    - [ ] display the 'secondary feedfile' and how it should be filled out.
+    - [x] display the 'secondary feedfile' and how it should be filled out.

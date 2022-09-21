@@ -3,7 +3,8 @@ var feedfile = {
     merchant_layout: [],
     data_rows: [],
     variant_map: [],
-    map_for_variants: []
+    map_for_variants: [],
+    blank_columns: []
 };
 is_variant = false;
 allLines = [];
@@ -176,11 +177,28 @@ function hide(arr) {//Reveals a hidden HTML element.
         };
     });
 };
+function check_for_blank_columns(arr, allRows) {
+    // feedfile.blank_columns = new Array(arr.length)
+    // console.log(feedfile.blank_columns)
+    // for (i = 0; i < feedfile.blank_columns.length; i++) {
+    //     feedfile.blank_columns[i] = false;
+    //     for (j = 1; j < allRows.length - 1; j++) {
+    //         allRows.forEach(row => {
+    //             row.replaceAll(/\t/g, '<newcolumn>')
+    //                 .replaceAll(',', "<newcolumn>")
+    //                 .replaceAll("|", "<newcolumn>")
+    //                 .split("<newcolumn>");
+    //             console.log(row)
+    //         })
+    //     }
 
+
+
+    // }
+    // console.log(feedfile.blank_columns)
+
+}
 // !? All new scripting above this line!
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Global field arrays, and attribute maps are listed at the bottom of this script.
-
 
 function copyToClipboard(id) {// Create a single text value, to clipboard
     let copy = '';
@@ -229,29 +247,7 @@ function addError(text, subtext, buttonParts) {// Function to Add Line Item Erro
     errorList.appendChild(buttonListItem);
     revealHidden(['errors'])
 };
-function duplicateCheck(map) {
-    console.log("checking for duplicates")
-    for (i = 0; i < map.length; i++) {
-        for (j = i + 1; j < map.length; j++) {
-            if (map[i] == map[j]) {
-                addError("Found a duplicate match for " + map[i], " at index's " + i + " & " + j + " one will need to be deleted");
-                return;
-            };
-        };
-    };
-};
 
-
-function buildDeptSelection(object) { //FIRST STEP TO BUILDING A DYNAMIC FIELD CHANGER
-    return
-    `<select id='departmentTest1' name='departmentTest1'>
-                    <option value=`+ object.field + `>` + object.field + `</option>
-                    <option value='blank'>''</option>
-                    <option value=`+ object.altOptions[0] + `>` + object.altOptions[0] + `</option>
-                    <option value=`+ object.altOptions[1] + `>` + object.altOptions[1] + `</option>
-                    <option value=`+ object.altOptions[2] + `>` + object.altOptions[2] + `<option>        
-                    </select><button id='updateDept`+ object.index + `'>Change</button>`
-};
 
 function buttonConstruction(newError, newField, newReplace, newRegex, newReplaceWith) {
     let buttonParts = { //BUILDING Button OBject (parts).. for ERRORS
@@ -290,31 +286,25 @@ function readFile(input) {
             validInput
                 .replaceAll("'", '')
                 .replaceAll('"', '')
-                .replaceAll(',', /\t/g)
-                .replaceAll("|", /\t/g)
-                .split(/\t/g);
-        feedfile.data_rows = {
-            row1: stringToArray(allLines[1]).split(/\t/g),
-            row2: stringToArray(allLines[2]).split(/\t/g),
-            row3: stringToArray(allLines[3]).split(/\t/g),
-            row4: stringToArray(allLines[4]).split(/\t/g),
-            row5: stringToArray(allLines[5]).split(/\t/g),
-            row6: stringToArray(allLines[6]).split(/\t/g),
-        }
-        console.log(feedfile.data_rows)
+                .replaceAll(/\t/g, '<newcolumn>')
+                .replaceAll(',', "<newcolumn>")
+                .replaceAll("|", "<newcolumn>")
+                .split("<newcolumn>");
+
         var firstArray = //First step in building an array from Merchant Data (removing delimiters, any capitalizations and repetitive values)
             validInput.toLowerCase()
                 .replaceAll("'", '')
                 .replaceAll('"', '')
-                .replaceAll(',', /\t/g)
-                .replaceAll("|", /\t/g)
+                .replaceAll(',', "<newcolumn>")
+                .replaceAll("|", "<newcolumn>")
+                .replaceAll(/\t/g, '<newcolumn>')
                 .replaceAll('-', '')
                 .replaceAll('_', '')
                 .replaceAll(' ', '')
                 .replaceAll('item', '')
                 .replaceAll('product', '')
                 .replaceAll('\r', '')
-                .split(/\t/g);
+                .split("<newcolumn>");
 
         if (feedfile.merchant_layout.indexOf("product" || "item")) {// quickly check to see if the Merchant used 'product' or 'item' to define the product name, and ensure its placed in the array
             let i = feedfile.merchant_layout.indexOf("product");
@@ -325,12 +315,11 @@ function readFile(input) {
         feedfile.variant_map.forEach(x => {
             x = ''
         })
-        feedfile.map_for_variants = firstArray
-        feedfile.map_for_variants.forEach(x => {
-            x = ''
-        })
+        check_for_blank_columns(firstArray, allLines)
+
         console.log(firstArray)
         determine_fields(firstArray); //FIRST MAPPING STEP
+        console.log(feedfile)
     };
     fileReader.onerror = function () {
         alert(fileReader.error);
