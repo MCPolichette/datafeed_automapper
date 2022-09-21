@@ -260,15 +260,15 @@ function buttonConstruction(newError, newField, newReplace, newRegex, newReplace
     return buttonParts
 };
 
-function stringToArray(string) {
-    string
-        .toLowerCase()
-        .replaceAll("'", '')
-        .replaceAll('"', '')
-        .replaceAll(',', /\t/g)
-        .replaceAll('|', /\t/g)
-    return string
-}
+// function stringToArray(string) {
+//     string
+//         .toLowerCase()
+//         .replaceAll("'", '')
+//         .replaceAll('"', '')
+//         .replaceAll(',', /\t/g)
+//         .replaceAll('|', /\t/g)
+//     return string
+// }
 function readFile(input) {
     clearAll()
     let file = input.files[0];
