@@ -207,7 +207,7 @@ function copyToClipboard(id) {// Create a single text value, to clipboard
     }
     else { copy = document.getElementById(id).innerText };
     navigator.clipboard.writeText(copy);
-    alert('Copied to your Clipboard!');
+
 };
 function clearAll() {  // function that clears all elements
     document.getElementsByClassName('mapView').innerHTML = '';
