@@ -291,6 +291,7 @@ function readFile(input) {
                 .replaceAll("|", "<newcolumn>")
                 .split("<newcolumn>");
 
+        var column_count = feedfile.merchant_layout.length
         var firstArray = //First step in building an array from Merchant Data (removing delimiters, any capitalizations and repetitive values)
             validInput.toLowerCase()
                 .replaceAll("'", '')
@@ -305,16 +306,19 @@ function readFile(input) {
                 .replaceAll('product', '')
                 .replaceAll('\r', '')
                 .split("<newcolumn>");
-
         if (feedfile.merchant_layout.indexOf("product" || "item")) {// quickly check to see if the Merchant used 'product' or 'item' to define the product name, and ensure its placed in the array
             let i = feedfile.merchant_layout.indexOf("product");
             let j = feedfile.merchant_layout.indexOf("item")
             firstArray[i] = 'name'; firstArray[j] = 'name';
         };
-        feedfile.variant_map = firstArray
-        feedfile.variant_map.forEach(x => {
-            x = ''
-        })
+        feedfile.variant_map = new Array;
+        console.log(feedfile.variant_map)
+        for (i = 0; i < column_count; i++) {
+            feedfile.variant_map.push("")
+
+        }
+        console.log(feedfile)
+
         check_for_blank_columns(firstArray, allLines)
 
         console.log(firstArray)
@@ -325,6 +329,7 @@ function readFile(input) {
         alert(fileReader.error);
     };
 };
+
 // DATAFEED FIELD ARRAYS
 var exampleColumns = ['strProductSku', 'strProductId', 'strCategory', 'txtShortDescription', 'strSubCategory'];
 var exampleColumns2 = [" ", "Manufacturer Id", "Brand Name", "Product-Name", "Long Description", "Short Description", "Category", "SubCategory", "Product Group", "Thumb URL", "Image URL", "Buy Link", "Keywords", "Reviews", "Sale Price", "Brand Page Link", "Brand Logo Image", "Product Parent Grouping Id", "Product Color", "Product Size", "Product Pattern", "Product Material", "Product Weight", "Product Age Group", "Product Gender", "Product UPC", "Product GTIN", "Variants XML", "Product GUID", "Product Sale Price Effective Date", "Product Availability", "Product Visibility", "Product Model Number", "Product Quantity", "Product Alternate Buy URL", "Product Alternate Product ID", "Department", "Medium Image URL", "Google Categorization", "Item Based Commission"];
@@ -444,7 +449,7 @@ var fields = {
         variant: false
     }, {
         field_name: 'strBrandLogoImage',
-        matches: ['brandlogoimage', 'brandimage', 'brandimageurl', 'logourl', 'logolink', 'logoimage', 'logourl'],
+        matches: ['brandlogoimage', 'brandimage', 'brandimageurl', 'logourl', 'logolink', 'logoimage', 'logourl', 'brandlogo'],
         variant: false
     }, {
         field_name: 'strThumbnailURL',
