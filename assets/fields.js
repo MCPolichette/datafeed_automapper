@@ -1,0 +1,263 @@
+var fields = {
+    att_map: attributeMap = `<Fields>
+                <Field><name>strAttribute1</name><title>Parent Group ID</title><type>string</type></Field>
+
+                <Field><name>strAttribute2</name><title>Color</title><type>string</type></Field>
+
+                <Field><name>strAttribute3</name><title>Size</title><type>string</type></Field>
+
+                <Field><name>strAttribute4</name><title>Pattern</title><type>string</type></Field>
+
+                <Field><name>strAttribute5</name><title>Material</title><type>string</type></Field>
+
+                <Field><name>strAttribute6</name><title>Age Group</title><type>string</type></Field>
+
+                <Field><name>strAttribute7</name><title>Gender</title><type>string</type></Field>
+
+                <Field><name>strAttribute8</name><title>UPC</title><type>string</type></Field>
+
+                <Field><name>strAttribute9</name><title>Availability</title><type>string</type></Field>
+
+                <Field><name>strAttribute10</name><title>Google Product Category</title><type>string</type></Field>
+
+                <Field><name>strMediumImage</name><title>Medium Image URL</title><type>string</type></Field>
+
+                <Field><name>txtAttribute1</name><title>Variants XML</title><type>xml</type><compression>gz</compression></Field>
+
+                <Field><name>txtAttribute2</name><title>GTIN</title><type>string</type></Field>
+                <Field><name>txtAttribute3</name><title>Key Words</title><type>string</type></Field>
+
+            </Fields>`,
+    required: [{
+        field_name: 'strDepartment',
+        back_up: ['strAttribute10', 'strCategory', 'strSubCategory']
+    }, {
+        field_name: "strProductSKU",
+        back_up: ['strAttribute1']
+    }, {
+        field_name: 'strProductName',
+        back_up: ['N/A']
+    }, {
+        field_name: 'dblProductPrice',
+        back_up: ['dblProductSalePrice']
+    }, {
+        field_name: 'strLargeImage',
+        back_up: ['strMediumImageURL', 'strThumbnailImageURL']
+    }, {
+        field_name: 'txtLongDescription',
+        back_up: ['txtShortDescription',]
+    }, {
+        field_name: 'strBuyURL',
+        back_up: ['N/A']
+    }
+    ],
+    all: [{
+        field_name: 'strDepartment',
+        matches: ['department', 'dept'],
+        variant: false
+    }, {
+        field_name: "strProductSKU",
+        matches: ['sku', 'id', 'number', 'idnumber'],
+        variant: "variant-sku"
+    }, {
+        field_name: 'strProductName',
+        matches: ['name', 'title'],
+        variant: false
+    }, {
+        field_name: 'dblProductPrice',
+        matches: ['price', 'retailprice', 'retail'],
+        variant: 'variant-retail_price'
+    }, {
+        field_name: 'strLargeImage',
+        matches: ['imageurl', 'image', 'imageurllarge', 'imagelink'],
+        variant: 'variant-image_url'
+    }, {
+        field_name: 'txtLongDescription',
+        matches: ['longdescription', 'description',],
+        variant: false
+    }, {
+        field_name: 'strBuyURL',
+        matches: ['link', 'buylink', 'buyurl', 'url'],
+        variant: 'variant-detail_url'
+    }, {
+        field_name: 'strCategory',
+        matches: ['category'],
+        variant: false
+    }, {
+        field_name: 'strSubCategory',
+        matches: ['subcategory'],
+        variant: false
+    }, {
+        field_name: "strAttribute10",
+        matches: ['googlecategory', 'googlecategorization'],
+        variant: false
+    }, {
+        field_name: 'dblItemCommission',
+        matches: ['basedcommission', 'ibc', 'commission', 'commissionrate'],
+        variant: false
+    }, {
+        field_name: 'dblProductSalePrice',
+        matches: ['saleprice', 'sale'],
+        variant: 'variant-sale_price'
+    }, {
+        field_name: 'strManufacturerPartNumber',
+        matches: ['manufacturerpartnumber', 'manufacturerid', 'mpn'],
+        variant: 'variant-vendor_sku'
+    }, {
+        field_name: 'strBrandName',
+        matches: ['brandname', 'brand'],
+        variant: false
+    }, {
+        field_name: 'strBrandURL',
+        matches: ['brandurl', 'brandpagelink', 'brandpage'],
+        variant: false
+    }, {
+        field_name: 'strBrandLogoImage',
+        matches: ['brandlogoimage', 'brandimage', 'brandimageurl', 'logourl', 'logolink', 'logoimage', 'logourl', 'brandlogo'],
+        variant: false
+    }, {
+        field_name: 'strThumbnailURL',
+        matches: ['thumbnailurl', 'thumbnail', 'thumbnaillink', 'thumbnailimage', 'imageurlsmall', 'imagesmall', 'thumblink', 'thumbimage', 'thumburl'],
+        variant: false
+    }, {
+        field_name: 'strMediumImageURL',
+        matches: ['mediumimageurl', 'mediumimage', 'mediumimagelink', 'imageurlmedium'],
+        variant: false
+    }, {
+        field_name: 'txtShortDescription',
+        matches: ['shortdescription'],
+        variant: false
+    }, {
+        field_name: 'strAttribute1',
+        valueTitle: 'Product Parent Grouping Id',
+        type: '<type>string</type>',
+        matches: ['parentgroup', 'parentgroupid', 'groupid', 'group'],
+        variant: 'strProductSKU'
+    }, {
+        field_name: 'strAttribute2',
+        valueTitle: 'Product Color',
+        type: '<type>string</type>',
+        matches: ['color'],
+        variant: 'variant-color'
+    }, {
+        field_name: 'strAttribute3',
+        valueTitle: 'Product Size',
+        type: '<type>string</type>',
+        matches: ['size',],
+        variant: 'variant-size'
+    }, {
+        field_name: 'strAttribute4',
+        valueTitle: 'Product Pattern',
+        type: '<type>string</type>',
+        matches: ['pattern', 'style'],
+        variant: 'variant-style'
+    }, {
+        field_name: 'strAttribute5',
+        valueTitle: 'Product Material',
+        type: '<type>string</type>',
+        matches: ['material'],
+        variant: false
+    }, {
+        field_name: 'strAttribute6',
+        valueTitle: 'Product Age Group',
+        type: '<type>string</type>',
+        matches: ['agegroup', 'age'],
+        variant: false
+    }, {
+        field_name: 'strAttribute7',
+        valueTitle: 'Product Gender',
+        type: '<type>string</type>',
+        matches: ['gender'],
+        variant: false
+    }, {
+        field_name: 'strAttribute8',
+        valueTitle: 'Product UPC',
+        type: '<type>string</type>',
+        matches: ['upc'],
+        variant: 'variant-upc'
+    }, {
+        field_name: 'strAttribute9',
+        valueTitle: 'Product Availability',
+        type: '<type>string</type>',
+        matches: ['availability', 'available'],
+        variant: false
+    }, {
+        field_name: 'txtAttribute1',
+        valueTitle: 'Variants XML',
+        type: '<type>xml</type><compression>gz</compression>',
+        matches: ['xml', 'variantxml', 'variants', 'variantsxml'],
+        variant: false
+    }, {
+        field_name: 'txtAttribute2',
+        valueTitle: 'GTIN',
+        type: '<type>string</type>',
+        matches: ['gtin'],
+        variant: false
+    }, {
+        field_name: 'txtAttribute3',
+        valueTitle: 'Key Words',
+        type: '<type>string</type>',
+        matches: ['keywords'],
+        variant: false
+    }],
+    variants: [{
+        variant: 'variant-sku',
+        matches: 'sku'
+    },
+    {
+        variant: 'variant-upc',
+        matches: 'upc'
+    },
+    {
+        variant: 'variant-vendor_sku',
+        matches: 'vendorsku'
+    },
+    {
+        variant: 'variant-size',
+        matches: 'size'
+    },
+    {
+        variant: 'variant-color',
+        matches: 'color'
+    },
+    {
+        variant: 'Variant-style',
+        matches: 'style'
+    },
+    {
+        variant: 'Variant-retail_price',
+        matches: 'retailprice'
+    },
+    {
+        variant: 'Variant-sale_price',
+        matches: 'saleprice'
+    },
+    {
+        variant: 'variant-image_url',
+        matches: 'imageurl'
+    },
+    {
+        variant: 'variant-detail_url',
+        matches: 'detailurl'
+    },
+    {
+        variant: 'variant-action_url',
+        matches: 'actionurl'
+    },
+    {
+        variant: 'variant-available',
+        matches: 'available'
+    },
+    {
+        variant: 'variant-season',
+        matches: 'season'
+    },
+    {
+        variant: 'variant-vendor_sku',
+        matches: 'vendorsku'
+    },
+    {
+        variant: 'Variant-year',
+        matches: 'year'
+    },],
+}

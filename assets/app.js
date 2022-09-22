@@ -4,10 +4,12 @@ var feedfile = {
     data_rows: [],
     variant_map: [],
     map_for_variants: [],
-    blank_columns: []
+    blank_columns: [],
+    file_type: ''
 };
 is_variant = false;
 allLines = [];
+
 
 function delete_this_function() {
     // !? WILL PLAY WITH THIS LATER WHEN CLEANING UP
@@ -101,6 +103,12 @@ function variant_toggle() {
     };
 };
 
+function build_map_buttons() {
+
+}
+function update_map() {
+
+}
 
 function build_mapped_table(table_type) {
     var table = document.getElementById("table_map");
@@ -134,6 +142,17 @@ function build_mapped_table(table_type) {
             });
             break
     };
+    // Identifies empty columns, and highlights header row accordingly.
+    table.rows[0].classList.add('table-info', 'h5')
+    if (feedfile.blank_columns.length > 0) {
+        feedfile.blank_columns.forEach((empty_column) => {
+            table.rows[0].cells[empty_column + 1].classList.add('table-warning');
+            table.rows[0].cells[empty_column + 1].insertAdjacentHTML("beforeend", "<br><small>(empty column)</small>");
+        });
+    };
+    for (k = 0; k < table.rows.length; k++) {
+        table.rows[k].cells[0].classList.add('table-primary', 'h6')
+    }
     reveal_hidden(['post_upload_display'])
 };
 function build_pipe_display(type) {
@@ -177,27 +196,61 @@ function hide(arr) {//Reveals a hidden HTML element.
         };
     });
 };
+
 function check_for_blank_columns(arr, allRows) {
-    // feedfile.blank_columns = new Array(arr.length)
-    // console.log(feedfile.blank_columns)
-    // for (i = 0; i < feedfile.blank_columns.length; i++) {
-    //     feedfile.blank_columns[i] = false;
-    //     for (j = 1; j < allRows.length - 1; j++) {
-    //         allRows.forEach(row => {
-    //             row.replaceAll(/\t/g, '<newcolumn>')
-    //                 .replaceAll(',', "<newcolumn>")
-    //                 .replaceAll("|", "<newcolumn>")
-    //                 .split("<newcolumn>");
-    //             console.log(row)
-    //         })
-    //     }
+    let delimiter = ''
+    let blank_columns = new Array(arr.length)
+    console.log(allRows[0])
+    console.log(allRows[1])
+    console.log(allRows[2])
+    // console.log(rows)
+    for (k = 0; k < arr.length; k++) {
+        blank_columns[k] = true;
+    }
+    console.log(blank_columns)
+    switch (feedfile.file_type) {
+        case 'text/csv':
+            delimiter = ','
+            break
+        case "text/plain":
+            if (allRows[0].includes("|")) {
+                console.log('PIPES!?')
+                delimiter = '|'
+            } else if (allRows[0].includes("\t")) {
+                console.log("TABS")
+                delimiter = /\t/g
+            }
+    }
+    console.log(delimiter)
+    if (delimiter == "") { } else {
+        console.log(allRows[1])
+        for (i = 1; i < allRows.length - 1; i++) {
+            let blank_row = new Array()
+            let x = allRows[i]
+                .replace("\r", "").split(delimiter);
+            if (x.length === blank_columns.length) {
+                blank_row.push(x)
+                console.log(x)
+                for (j = 0; j < blank_columns.length; j++) {
+                    if (x[j] != ('')) {
+                        blank_columns[j] = false
+                    };
+                };
+            };
+        };
+    };
+    blank_columns.forEach((el, index) => {
+
+        if (el === true) {
+            feedfile.blank_columns.push(index)
+
+        }
+    })
+    console.log(blank_columns);
+    console.log(feedfile.blank_columns)
+};
 
 
-
-    // }
-    // console.log(feedfile.blank_columns)
-
-}
 // !? All new scripting above this line!
 
 function copyToClipboard(id) {// Create a single text value, to clipboard
@@ -259,25 +312,27 @@ function buttonConstruction(newError, newField, newReplace, newRegex, newReplace
     };
     return buttonParts
 };
+function file_data(myFile) {
+    var file = myFile.files[0];
+    console.log(file)
+    feedfile.file_name = file.name.replace(/ *\([^)]*\) */g, "");
+    feedfile.file_size = file.size
+    feedfile.file_type = file.type
+    console.log(feedfile)
+}
 
-// function stringToArray(string) {
-//     string
-//         .toLowerCase()
-//         .replaceAll("'", '')
-//         .replaceAll('"', '')
-//         .replaceAll(',', /\t/g)
-//         .replaceAll('|', /\t/g)
-//     return string
-// }
+
+
 function readFile(input) {
+    file_data(input)
     clearAll()
     let file = input.files[0];
     let fileReader = new FileReader();
-    let allLines = []
+    var allLines = []
     fileReader.readAsText(file);
     fileReader.onload = function () {
         var text = fileReader.result;
-        var allLines = text.split('\n')
+        allLines = text.split('\n')
         console.log(allLines.length)
         var validInput = allLines[0]
         addNote(allLines.length + " rows detected")
@@ -319,9 +374,10 @@ function readFile(input) {
         }
         console.log(feedfile)
 
+        if (allLines.length > 50) {
+            allLines.splice(51, allLines.length)
+        }
         check_for_blank_columns(firstArray, allLines)
-
-        console.log(firstArray)
         determine_fields(firstArray); //FIRST MAPPING STEP
         console.log(feedfile)
     };
@@ -329,271 +385,3 @@ function readFile(input) {
         alert(fileReader.error);
     };
 };
-
-// DATAFEED FIELD ARRAYS
-var exampleColumns = ['strProductSku', 'strProductId', 'strCategory', 'txtShortDescription', 'strSubCategory'];
-var exampleColumns2 = [" ", "Manufacturer Id", "Brand Name", "Product-Name", "Long Description", "Short Description", "Category", "SubCategory", "Product Group", "Thumb URL", "Image URL", "Buy Link", "Keywords", "Reviews", "Sale Price", "Brand Page Link", "Brand Logo Image", "Product Parent Grouping Id", "Product Color", "Product Size", "Product Pattern", "Product Material", "Product Weight", "Product Age Group", "Product Gender", "Product UPC", "Product GTIN", "Variants XML", "Product GUID", "Product Sale Price Effective Date", "Product Availability", "Product Visibility", "Product Model Number", "Product Quantity", "Product Alternate Buy URL", "Product Alternate Product ID", "Department", "Medium Image URL", "Google Categorization", "Item Based Commission"];
-// List of potential fields. (all spaces, dashes, and the terms 'product' and 'item' removed, to reduce load, and keep things streamlined)
-var fields = {
-    att_map: attributeMap = `<Fields>
-                <Field><name>strAttribute1</name><title>Parent Group ID</title><type>string</type></Field>
-
-                <Field><name>strAttribute2</name><title>Color</title><type>string</type></Field>
-
-                <Field><name>strAttribute3</name><title>Size</title><type>string</type></Field>
-
-                <Field><name>strAttribute4</name><title>Pattern</title><type>string</type></Field>
-
-                <Field><name>strAttribute5</name><title>Material</title><type>string</type></Field>
-
-                <Field><name>strAttribute6</name><title>Age Group</title><type>string</type></Field>
-
-                <Field><name>strAttribute7</name><title>Gender</title><type>string</type></Field>
-
-                <Field><name>strAttribute8</name><title>UPC</title><type>string</type></Field>
-
-                <Field><name>strAttribute9</name><title>Availability</title><type>string</type></Field>
-
-                <Field><name>strAttribute10</name><title>Google Product Category</title><type>string</type></Field>
-
-                <Field><name>strMediumImage</name><title>Medium Image URL</title><type>string</type></Field>
-
-                <Field><name>txtAttribute1</name><title>Variants XML</title><type>xml</type><compression>gz</compression></Field>
-
-                <Field><name>txtAttribute2</name><title>GTIN</title><type>string</type></Field>
-                <Field><name>txtAttribute3</name><title>Key Words</title><type>string</type></Field>
-
-            </Fields>`,
-    required: [{
-        field_name: 'strDepartment',
-        back_up: ['strAttribute10', 'strCategory', 'strSubCategory']
-    }, {
-        field_name: "strProductSKU",
-        back_up: ['strAttribute1']
-    }, {
-        field_name: 'strProductName',
-        back_up: ['N/A']
-    }, {
-        field_name: 'dblProductPrice',
-        back_up: ['dblProductSalePrice']
-    }, {
-        field_name: 'strLargeImage',
-        back_up: ['strMediumImageURL', 'strThumbnailImageURL']
-    }, {
-        field_name: 'txtLongDescription',
-        back_up: ['txtShortDescription',]
-    }, {
-        field_name: 'strBuyURL',
-        back_up: ['N/A']
-    }
-    ],
-    all: [{
-        field_name: 'strDepartment',
-        matches: ['department', 'dept'],
-        variant: false
-    }, {
-        field_name: "strProductSKU",
-        matches: ['sku', 'id', 'number', 'idnumber'],
-        variant: "variant-sku"
-    }, {
-        field_name: 'strProductName',
-        matches: ['name', 'title'],
-        variant: false
-    }, {
-        field_name: 'dblProductPrice',
-        matches: ['price', 'retailprice', 'retail'],
-        variant: 'variant-retail_price'
-    }, {
-        field_name: 'strLargeImage',
-        matches: ['imageurl', 'image', 'imageurllarge', 'imagelink'],
-        variant: 'variant-image_url'
-    }, {
-        field_name: 'txtLongDescription',
-        matches: ['longdescription', 'description',],
-        variant: false
-    }, {
-        field_name: 'strBuyURL',
-        matches: ['link', 'buylink', 'buyurl', 'url'],
-        variant: 'variant-detail_url'
-    }, {
-        field_name: 'strCategory',
-        matches: ['category'],
-        variant: false
-    }, {
-        field_name: 'strSubCategory',
-        matches: ['subcategory'],
-        variant: false
-    }, {
-        field_name: "strAttribute10",
-        matches: ['googlecategory', 'googlecategorization'],
-        variant: false
-    }, {
-        field_name: 'dblItemCommission',
-        matches: ['basedcommission', 'ibc', 'commission', 'commissionrate'],
-        variant: false
-    }, {
-        field_name: 'dblProductSalePrice',
-        matches: ['saleprice', 'sale'],
-        variant: 'variant-sale_price'
-    }, {
-        field_name: 'strManufacturerPartNumber',
-        matches: ['manufacturerpartnumber', 'manufacturerid', 'mpn'],
-        variant: 'variant-vendor_sku'
-    }, {
-        field_name: 'strBrandName',
-        matches: ['brandname', 'brand'],
-        variant: false
-    }, {
-        field_name: 'strBrandURL',
-        matches: ['brandurl', 'brandpagelink', 'brandpage'],
-        variant: false
-    }, {
-        field_name: 'strBrandLogoImage',
-        matches: ['brandlogoimage', 'brandimage', 'brandimageurl', 'logourl', 'logolink', 'logoimage', 'logourl', 'brandlogo'],
-        variant: false
-    }, {
-        field_name: 'strThumbnailURL',
-        matches: ['thumbnailurl', 'thumbnail', 'thumbnaillink', 'thumbnailimage', 'imageurlsmall', 'imagesmall', 'thumblink', 'thumbimage', 'thumburl'],
-        variant: false
-    }, {
-        field_name: 'strMediumImageURL',
-        matches: ['mediumimageurl', 'mediumimage', 'mediumimagelink', 'imageurlmedium'],
-        variant: false
-    }, {
-        field_name: 'txtShortDescription',
-        matches: ['shortdescription'],
-        variant: false
-    }, {
-        field_name: 'strAttribute1',
-        valueTitle: 'Product Parent Grouping Id',
-        type: '<type>string</type>',
-        matches: ['parentgroup', 'parentgroupid', 'groupid', 'group'],
-        variant: 'strProductSKU'
-    }, {
-        field_name: 'strAttribute2',
-        valueTitle: 'Product Color',
-        type: '<type>string</type>',
-        matches: ['color'],
-        variant: 'variant-color'
-    }, {
-        field_name: 'strAttribute3',
-        valueTitle: 'Product Size',
-        type: '<type>string</type>',
-        matches: ['size',],
-        variant: 'variant-size'
-    }, {
-        field_name: 'strAttribute4',
-        valueTitle: 'Product Pattern',
-        type: '<type>string</type>',
-        matches: ['pattern', 'style'],
-        variant: 'variant-style'
-    }, {
-        field_name: 'strAttribute5',
-        valueTitle: 'Product Material',
-        type: '<type>string</type>',
-        matches: ['material'],
-        variant: false
-    }, {
-        field_name: 'strAttribute6',
-        valueTitle: 'Product Age Group',
-        type: '<type>string</type>',
-        matches: ['agegroup', 'age'],
-        variant: false
-    }, {
-        field_name: 'strAttribute7',
-        valueTitle: 'Product Gender',
-        type: '<type>string</type>',
-        matches: ['gender'],
-        variant: false
-    }, {
-        field_name: 'strAttribute8',
-        valueTitle: 'Product UPC',
-        type: '<type>string</type>',
-        matches: ['upc'],
-        variant: 'variant-upc'
-    }, {
-        field_name: 'strAttribute9',
-        valueTitle: 'Product Availability',
-        type: '<type>string</type>',
-        matches: ['availability', 'available'],
-        variant: false
-    }, {
-        field_name: 'txtAttribute1',
-        valueTitle: 'Variants XML',
-        type: '<type>xml</type><compression>gz</compression>',
-        matches: ['xml', 'variantxml', 'variants', 'variantsxml'],
-        variant: false
-    }, {
-        field_name: 'txtAttribute2',
-        valueTitle: 'GTIN',
-        type: '<type>string</type>',
-        matches: ['gtin'],
-        variant: false
-    }, {
-        field_name: 'txtAttribute3',
-        valueTitle: 'Key Words',
-        type: '<type>string</type>',
-        matches: ['keywords'],
-        variant: false
-    }],
-    variants: [{
-        variant: 'variant-sku',
-        matches: 'sku'
-    },
-    {
-        variant: 'variant-upc',
-        matches: 'upc'
-    },
-    {
-        variant: 'variant-vendor_sku',
-        matches: 'vendorsku'
-    },
-    {
-        variant: 'variant-size',
-        matches: 'size'
-    },
-    {
-        variant: 'variant-color',
-        matches: 'color'
-    },
-    {
-        variant: 'Variant-style',
-        matches: 'style'
-    },
-    {
-        variant: 'Variant-retail_price',
-        matches: 'retailprice'
-    },
-    {
-        variant: 'Variant-sale_price',
-        matches: 'saleprice'
-    },
-    {
-        variant: 'variant-image_url',
-        matches: 'imageurl'
-    },
-    {
-        variant: 'variant-detail_url',
-        matches: 'detailurl'
-    },
-    {
-        variant: 'variant-action_url',
-        matches: 'actionurl'
-    },
-    {
-        variant: 'variant-available',
-        matches: 'available'
-    },
-    {
-        variant: 'variant-season',
-        matches: 'season'
-    },
-    {
-        variant: 'variant-vendor_sku',
-        matches: 'vendorsku'
-    },
-    {
-        variant: 'Variant-year',
-        matches: 'year'
-    },],
-}
