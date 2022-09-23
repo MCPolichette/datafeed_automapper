@@ -433,7 +433,30 @@ function readFile(input) {
                 .replaceAll(',', "<newcolumn>")
                 .replaceAll("|", "<newcolumn>")
                 .split("<newcolumn>");
+        feedfile.first_row = allLines[1].replaceAll("'", '')
+            .replaceAll('"', '')
+            .replaceAll(/\t/g, '<newcolumn>')
+            .replaceAll(',', "<newcolumn>")
+            .replaceAll("|", "<newcolumn>")
+            .split("<newcolumn>");
+        // -----------------------
+        //!? SUPER LAZY SHOPY FEED VERSION ONE CHECKER
+        // =========================================
+        console.log(feedfile.merchant_layout.length)
+        console.log(feedfile.first_row)
+        if ((feedfile.merchant_layout.length === 33) && (feedfile.merchant_layout[31] == shopify_API_feed_examples[0].column_layout[31])) {
+            // alert("this is a shopify Feed")
+            console.log('its a match')
+            var shopify_modal = new bootstrap.Modal(document.getElementById('alert-modal'), {
+                keyboard: false
+            });
+            document.getElementById('alert-statement').innerHTML = "This appears to be a Shopify Datafeed"
+            document.getElementById('alert-image-1').src = "assets/shopify_september_2022.png"
+            document.getElementById('alert-image-2').src = "assets/second_feed.png"
+            shopify_modal.show()
+        }
 
+        // =========================================
         var column_count = feedfile.merchant_layout.length
         var firstArray = //First step in building an array from Merchant Data (removing delimiters, any capitalizations and repetitive values)
             validInput.toLowerCase()
