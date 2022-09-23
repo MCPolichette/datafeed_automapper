@@ -9,6 +9,7 @@ var feedfile = {
 };
 is_variant = false;
 allLines = [];
+is_editing = false;
 
 
 function delete_this_function() {
@@ -37,6 +38,10 @@ function determine_fields(arr) {
                 };
             }));
     });
+    make_map_for_variants()
+    check_required_fields();
+};
+function make_map_for_variants() {
     feedfile.map_for_variants = new Array(feedfile.map.length)
     for (i = 0; i < feedfile.map_for_variants.length; i++) {
         feedfile.map_for_variants[i] = feedfile.map[i]
@@ -47,8 +52,7 @@ function determine_fields(arr) {
             feedfile.map_for_variants[i] = 'strProductSKU'
         }
     };
-    check_required_fields();
-};
+}
 function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFunction.  The answer is in there
     let required = fields.required;
     let map = feedfile.map;
@@ -88,27 +92,44 @@ function check_variant_mapping() {
         // reveal_hidden('variant-toggle')
     };
 };
+function is_editing_toggle() {
+    if (is_editing) {
+        is_editing = false;
+        document.getElementById('editor_warning').hidden = true
+    }
+    else {
+        is_editing = true;
+        document.getElementById('editor_warning').hidden = false
+    }
+    if (is_variant) {
+        build_mapped_table('variant');
+
+    } else {
+        build_mapped_table('standard');
+
+
+    };
+};
 
 function variant_toggle() {
     if (is_variant) {
         build_mapped_table('standard');
         build_pipe_display('standard');
         document.getElementById('copy_second_map').classList.add("disabled")
+        document.getElementById('secondary_mapping_image').hidden = true
+        document.getElementById('variant-toggle').innerHTML = "View Variant Map"
         is_variant = false
     } else {
         build_mapped_table('variant');
         build_pipe_display('variant');
         document.getElementById('copy_second_map').classList.remove("disabled")
+        document.getElementById('secondary_mapping_image').hidden = false
+        document.getElementById('variant-toggle').innerHTML = "View Standard Map"
         is_variant = true
     };
 };
 
-function build_map_buttons() {
 
-}
-function update_map() {
-
-}
 
 function build_mapped_table(table_type) {
     var table = document.getElementById("table_map");
@@ -127,6 +148,7 @@ function build_mapped_table(table_type) {
         case 'variant':
             feedfile.map_for_variants.forEach((field, i) => {
                 let map_cell = map_row.insertCell(i + 1).innerHTML = field
+                if (is_editing) { build_select_options(i) }
             });
             let variant_row = table.insertRow(2)
             let variant_title = variant_row.insertCell(0).innerHTML = "Variant Map:";
@@ -134,14 +156,17 @@ function build_mapped_table(table_type) {
                 let variant_cell = variant_row.insertCell(i + 1).innerHTML = field
             });
             build_pipe_display('variant')
+
             break
         case 'standard':
             feedfile.map.forEach((field, i) => {
                 let map_cell = map_row.insertCell(i + 1).innerHTML = field
                 build_pipe_display('standard')
+                if (is_editing) { build_select_options(i) }
             });
             break
     };
+
     // Identifies empty columns, and highlights header row accordingly.
     table.rows[0].classList.add('table-info', 'h5')
     if (feedfile.blank_columns.length > 0) {
@@ -155,6 +180,69 @@ function build_mapped_table(table_type) {
     }
     reveal_hidden(['post_upload_display'])
 };
+function build_select_options(i) {
+    if (is_variant) {
+        var use_this_map = feedfile.map_for_variants;
+    } else {
+        var use_this_map = feedfile.map;
+    };
+    var table = document.getElementById("table_map");
+    var selection = document.createElement('select')
+    selection.id = ('MapAdjuster_' + i)
+    selection.setAttribute("onchange", 'update_map(this.value,this.options[0].value)');
+    var option = document.createElement('option')
+    option.value = use_this_map[i];
+    option.text = use_this_map[i];
+    var blank_option = document.createElement('option')
+    blank_option.text = "BLANK"
+    blank_option.value = ''
+    selection.add(option)
+    selection.add(blank_option)
+
+    for (j = 0; j < fields.all.length; j++) {
+        if (fields.all[j].field_name != use_this_map[i]) {//)
+            new_option = document.createElement('option')
+            new_option.text = fields.all[j].field_name
+            new_option.value = fields.all[j].field_name
+            if (use_this_map.includes(fields.all[j].field_name)) {
+                new_option.disabled = true
+            }
+
+            selection.add(new_option)
+        }
+    }
+    console.log(selection)
+    table.rows[1].cells[(i + 1)].insertAdjacentHTML("beforeend", selection.outerHTML);
+    selection.selectedIndex = use_this_map.indexOf(use_this_map[i])
+}
+function update_map(new_value, current_value) {
+    if (is_variant) {
+        var use_this_map = feedfile.map_for_variants;
+    } else {
+        var use_this_map = feedfile.map;
+    };
+    console.log(new_value)
+    let index = use_this_map.indexOf(current_value)
+    if (new_value.length === 0) {
+        feedfile.map[index] = ''
+        feedfile.map_for_variants[index] = ''
+        feedfile.variant_map[index] = ''
+    } else {
+
+        let all = fields.all
+        let updated_variant = all.find(x => x.field_name === new_value).variant
+        console.log(updated_variant)
+        console.log(new_value, current_value,)
+        if (is_variant) { }
+        feedfile.map[index] = new_value
+        feedfile.map_for_variants[index] = new_value
+        feedfile.variant_map[index] = updated_variant
+    }
+    if (is_variant) { build_mapped_table('variant') } else { build_mapped_table('standard') }
+    make_map_for_variants()
+
+    console.log(feedfile)
+}
 function build_pipe_display(type) {
     let pipe_map = '';
     let variant_pipe_map = '';
@@ -264,6 +352,8 @@ function copyToClipboard(id) {// Create a single text value, to clipboard
 };
 function clearAll() {  // function that clears all elements
     document.getElementsByClassName('mapView').innerHTML = '';
+    document.getElementsByClassName('table_map').innerHTML = '';
+    is_variant = false;
     document.getElementById('mapNotes').innerHTML = '';
     document.getElementById('mapErrors').innerHTML = '';
     hide(['exampleBuildField'])
@@ -320,8 +410,6 @@ function file_data(myFile) {
     feedfile.file_type = file.type
     console.log(feedfile)
 }
-
-
 
 function readFile(input) {
     file_data(input)

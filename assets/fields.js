@@ -54,7 +54,7 @@ var fields = {
     all: [{
         field_name: 'strDepartment',
         matches: ['department', 'dept'],
-        variant: false
+        variant: ''
     }, {
         field_name: "strProductSKU",
         matches: ['sku', 'id', 'number', 'idnumber'],
@@ -62,7 +62,7 @@ var fields = {
     }, {
         field_name: 'strProductName',
         matches: ['name', 'title'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'dblProductPrice',
         matches: ['price', 'retailprice', 'retail'],
@@ -74,7 +74,7 @@ var fields = {
     }, {
         field_name: 'txtLongDescription',
         matches: ['longdescription', 'description',],
-        variant: false
+        variant: ''
     }, {
         field_name: 'strBuyURL',
         matches: ['link', 'buylink', 'buyurl', 'url'],
@@ -82,19 +82,19 @@ var fields = {
     }, {
         field_name: 'strCategory',
         matches: ['category'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'strSubCategory',
         matches: ['subcategory'],
-        variant: false
+        variant: ''
     }, {
         field_name: "strAttribute10",
         matches: ['googlecategory', 'googlecategorization'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'dblItemCommission',
         matches: ['basedcommission', 'ibc', 'commission', 'commissionrate'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'dblProductSalePrice',
         matches: ['saleprice', 'sale'],
@@ -106,27 +106,27 @@ var fields = {
     }, {
         field_name: 'strBrandName',
         matches: ['brandname', 'brand'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'strBrandURL',
         matches: ['brandurl', 'brandpagelink', 'brandpage'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'strBrandLogoImage',
         matches: ['brandlogoimage', 'brandimage', 'brandimageurl', 'logourl', 'logolink', 'logoimage', 'logourl', 'brandlogo'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'strThumbnailURL',
         matches: ['thumbnailurl', 'thumbnail', 'thumbnaillink', 'thumbnailimage', 'imageurlsmall', 'imagesmall', 'thumblink', 'thumbimage', 'thumburl'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'strMediumImageURL',
         matches: ['mediumimageurl', 'mediumimage', 'mediumimagelink', 'imageurlmedium'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'txtShortDescription',
         matches: ['shortdescription'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'strAttribute1',
         valueTitle: 'Product Parent Grouping Id',
@@ -156,19 +156,19 @@ var fields = {
         valueTitle: 'Product Material',
         type: '<type>string</type>',
         matches: ['material'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'strAttribute6',
         valueTitle: 'Product Age Group',
         type: '<type>string</type>',
         matches: ['agegroup', 'age'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'strAttribute7',
         valueTitle: 'Product Gender',
         type: '<type>string</type>',
         matches: ['gender'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'strAttribute8',
         valueTitle: 'Product UPC',
@@ -180,25 +180,25 @@ var fields = {
         valueTitle: 'Product Availability',
         type: '<type>string</type>',
         matches: ['availability', 'available'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'txtAttribute1',
         valueTitle: 'Variants XML',
         type: '<type>xml</type><compression>gz</compression>',
         matches: ['xml', 'variantxml', 'variants', 'variantsxml'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'txtAttribute2',
         valueTitle: 'GTIN',
         type: '<type>string</type>',
         matches: ['gtin'],
-        variant: false
+        variant: ''
     }, {
         field_name: 'txtAttribute3',
         valueTitle: 'Key Words',
         type: '<type>string</type>',
         matches: ['keywords'],
-        variant: false
+        variant: ''
     }],
     variants: [{
         variant: 'variant-sku',
