@@ -33,11 +33,18 @@
                             </table>
                         </div>
                     </div>
+                    <div class="alert alert-danger" role="alert" hidden id='editor_warning'>This edit feature may
+                        experience trouble in remapping
+                        primary variant fields (i.e. strProductSku, and strAttribute1. Currently working on a logic
+                        based solution</div>
                     <br>
                     <div class="d-grid col-6 mx-auto gap-2">
-                        <button id="variant-toggle" type="button" class="btn btn-primary btn-lg"
+                        <button id="variant-toggle" type="button" class="btn btn-secondary btn-sm"
                             onclick="variant_toggle()">Variant mapping is
                             available - Click Here </button>
+                        <button id="variant-toggle" type="button" class="btn btn-outline-secondary btn-sm"
+                            onclick="is_editing_toggle()">Click to adjust Mapping<br> <small>(experimental)</small>
+                        </button>
                     </div>
                     <hr>
                 </div>
@@ -81,7 +88,7 @@
                                             class="btn btn-primary" onclick='copyToClipboard(attributeMap)'>
                                             Copy Attribute Map </button>
                                     </div>
-                                    <div id="secondary_mapping_image" class="disabled">
+                                    <div id="secondary_mapping_image" hidden>
                                         <p> Use image below to process the secondary map.</p>
                                         <img class="img-fluid" src="assets/secondary_mapping_layout.png"
                                             alt="mapping instructions">
