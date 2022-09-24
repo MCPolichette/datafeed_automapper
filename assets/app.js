@@ -288,16 +288,15 @@ function hide(arr) {//Reveals a hidden HTML element.
 function check_for_blank_columns(arr, allRows) {
     let delimiter = ''
     let blank_columns = new Array(arr.length)
-    console.log(allRows[0])
-    console.log(allRows[1])
-    console.log(allRows[2])
-    // console.log(rows)
     for (k = 0; k < arr.length; k++) {
         blank_columns[k] = true;
     }
     console.log(blank_columns)
     switch (feedfile.file_type) {
         case 'text/csv':
+            delimiter = ','
+            break
+        case 'application/vnd.ms-excel':
             delimiter = ','
             break
         case "text/plain":
@@ -316,6 +315,7 @@ function check_for_blank_columns(arr, allRows) {
             let blank_row = new Array()
             let x = allRows[i]
                 .replace("\r", "").split(delimiter);
+            console.log(x.length)
             if (x.length === blank_columns.length) {
                 blank_row.push(x)
                 console.log(x)
