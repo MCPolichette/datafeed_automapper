@@ -116,7 +116,7 @@ var fields = {
         matches: ['brandlogoimage', 'brandimage', 'brandimageurl', 'logourl', 'logolink', 'logoimage', 'logourl', 'brandlogo'],
         variant: ''
     }, {
-        field_name: 'strThumbnailURL',
+        field_name: 'strThumbnailImage',
         matches: ['thumbnailurl', 'thumbnail', 'thumbnaillink', 'thumbnailimage', 'imageurlsmall', 'imagesmall', 'thumblink', 'thumbimage', 'thumburl'],
         variant: ''
     }, {
