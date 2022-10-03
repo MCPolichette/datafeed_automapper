@@ -69,7 +69,7 @@ var fields = {
         variant: 'variant-retail_price'
     }, {
         field_name: 'strLargeImage',
-        matches: ['imageurl', 'image', 'imageurllarge', 'imagelink'],
+        matches: ['imageurl', 'image', 'imageurllarge', 'imagelink', 'largeimage', 'largeimagelink,', 'largeimageurl',],
         variant: 'variant-image_url'
     }, {
         field_name: 'txtLongDescription',
@@ -81,7 +81,7 @@ var fields = {
         variant: 'variant-detail_url'
     }, {
         field_name: 'strCategory',
-        matches: ['category'],
+        matches: ['category', 'standardizedcategorization', 'categorization'],
         variant: ''
     }, {
         field_name: 'strSubCategory',
