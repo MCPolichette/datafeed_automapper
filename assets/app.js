@@ -178,6 +178,9 @@ function build_mapped_table(table_type) {
     for (k = 0; k < table.rows.length; k++) {
         table.rows[k].cells[0].classList.add('table-primary', 'h6')
     }
+    if (feedfile.map.includes('strAttribute1')) {
+        reveal_hidden(['variant-toggle'])
+    }
     reveal_hidden(['post_upload_display'])
 };
 function build_select_options(i) {
@@ -306,6 +309,9 @@ function check_for_blank_columns(arr, allRows) {
             } else if (allRows[0].includes("\t")) {
                 console.log("TABS")
                 delimiter = /\t/g
+            } else if (allRows[0].includes(",")) {
+                console.log("commas")
+                delimiter = ","
             }
     }
     console.log(delimiter)
