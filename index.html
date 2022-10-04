@@ -19,8 +19,12 @@
         <div class="row">
             <h4 class="justify-content-center">Mark's Automapper - variant edition</h4>
             <!-- <button onclick="delete_this_function(exampleColumns)">Magic Test Button</button> -->
-            <label for="formFileLg" class="form-label">Select downloaded Feed File</label>
-            <input onchange="readFile(this)" class="form-control form-control-lg" id="formFileLg" type="file">
+            <button id="refresh_page" type="button" hidden class="btn btn-secondary btn-sm"
+                onClick="window.location.reload();">Map a new file. </button>
+            <div id='file_input'>
+                <label for="formFileLg" class="form-label">Select downloaded Feed File</label>
+                <input onchange="readFile(this)" class="form-control form-control-lg" id="formFileLg" type="file">
+            </div>
         </div>
         <div class='container' hidden id="post_upload_display">
             <div class='row'>
@@ -38,6 +42,19 @@
                         primary variant fields (i.e. strProductSku, and strAttribute1. Currently working on a logic
                         based solution</div>
                     <br>
+                    <div class="row">
+                        <div class='col-6'>
+                            <h5><strong>Notes:</strong></h5>
+                            <ul class="list-group list-group-flush" id="mapping_notes">
+                            </ul>
+                        </div>
+                        <div class='col-6 '>
+                            <h5><strong>Errors:</strong></h5>
+                            <ul class="list-group list-group-flush" id="mapping_errors">
+
+                            </ul>
+                        </div>
+                    </div>
                     <div class="d-grid col-6 mx-auto gap-2">
                         <button id="variant-toggle" type="button" hidden class="btn btn-secondary btn-lg"
                             onclick="variant_toggle()">Variant mapping is
@@ -142,6 +159,7 @@
                 </div>
             </div>
         </div>
+
 
 
         <hr>

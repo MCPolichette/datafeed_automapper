@@ -20,7 +20,7 @@ function delete_this_function() {
     // ===========================================================
     // feedfile.map = exampleColumns;
     // determine_fields(exampleColumns)
-}
+};
 function determine_fields(arr) {
     console.log(arr)
     arr.forEach((array_element, index) => {
@@ -34,11 +34,11 @@ function determine_fields(arr) {
                     if (field_object.variant) {
                         feedfile.variant_map[index] = field_object.variant;
                     }
-                    else { feedfile.variant_map[index] = ''; }
+                    else { feedfile.variant_map[index] = ''; };
                 };
             }));
     });
-    make_map_for_variants()
+    make_map_for_variants();
     check_required_fields();
 };
 function make_map_for_variants() {
@@ -52,7 +52,7 @@ function make_map_for_variants() {
             feedfile.map_for_variants[i] = 'strProductSKU'
         }
     };
-}
+};
 function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFunction.  The answer is in there
     let required = fields.required;
     let map = feedfile.map;
@@ -67,10 +67,42 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                     x = map.indexOf(field.back_up[i])
                     feedfile.map[x] = field.field_name;
                     i = stop_for_loop
-                };
+                }
+
             };
         };
     });
+    required.forEach((field, index) => {
+        if (map.includes(field.field_name)) { }
+        else {
+
+            let standard_suggestion = 'Try using the adjust mapping button, to insert this required field above.';
+            switch (field.field_name) {
+                case 'strDepartment':
+                    add_error('unable to map a column for Department', [standard_suggestion,])
+                    break
+                case "strProductSKU":
+                    add_error('unable to map a column for ProductSKU', [standard_suggestion,])
+                    break
+                case 'strProductName':
+                    add_error('unable to map a column for ProductName', [standard_suggestion,])
+                    break
+                case 'dblProductPrice':
+                    add_error('unable to map a column for ProductPrice', [standard_suggestion,])
+                    break
+                case 'strLargeImage':
+                    add_error('unable to map a column for LargeImage', [standard_suggestion,])
+                    break
+                case 'txtLongDescription':
+                    add_error('unable to map a column for LongDescription', [standard_suggestion,])
+                    break
+                case 'strBuyURL':
+                    add_error('unable to map a column for BuyURL', [standard_suggestion,])
+                    break
+            }
+        }
+    })
+
     console.log(feedfile);
     build_pipe_display();
     build_mapped_table("standard");
@@ -103,11 +135,8 @@ function is_editing_toggle() {
     }
     if (is_variant) {
         build_mapped_table('variant');
-
     } else {
         build_mapped_table('standard');
-
-
     };
 };
 
@@ -128,8 +157,6 @@ function variant_toggle() {
         is_variant = true
     };
 };
-
-
 
 function build_mapped_table(table_type) {
     var table = document.getElementById("table_map");
@@ -180,8 +207,9 @@ function build_mapped_table(table_type) {
     }
     if (feedfile.map.includes('strAttribute1')) {
         reveal_hidden(['variant-toggle'])
-    }
-    reveal_hidden(['post_upload_display'])
+    };
+    reveal_hidden(['post_upload_display', 'refresh_page']);
+    hide(['file_input']);
 };
 function build_select_options(i) {
     if (is_variant) {
@@ -217,7 +245,7 @@ function build_select_options(i) {
     console.log(selection)
     table.rows[1].cells[(i + 1)].insertAdjacentHTML("beforeend", selection.outerHTML);
     selection.selectedIndex = use_this_map.indexOf(use_this_map[i])
-}
+};
 function update_map(new_value, current_value) {
     if (is_variant) {
         var use_this_map = feedfile.map_for_variants;
@@ -244,19 +272,17 @@ function update_map(new_value, current_value) {
     if (is_variant) { build_mapped_table('variant') } else { build_mapped_table('standard') }
     make_map_for_variants()
 
-    console.log(feedfile)
-}
+    console.log(feedfile);
+};
 function build_pipe_display(type) {
     let pipe_map = '';
     let variant_pipe_map = '';
     switch (type) {
         case 'standard':
-
             pipe_map = feedfile.map.toString().replaceAll(',', '|');
             console.log('standard', pipe_map)
             break
         case "variant":
-
             pipe_map = feedfile.map_for_variants.toString().replaceAll(',', '|');
             variant_pipe_map = feedfile.variant_map.toString().replaceAll(',', '|');
             console.log('variant', pipe_map)
@@ -265,11 +291,43 @@ function build_pipe_display(type) {
     document.getElementById("pipe_display").innerHTML = pipe_map
     document.getElementById('variant_pipe_display').innerHTML = variant_pipe_map
 };
-function add_note() {
+function add_note(text, subtext) {
+    var noteList = document.getElementById('mapping_notes');
+    var newListItem = document.createElement('li');
+    newListItem.classList.add("list-group-item");
+    newListItem.appendChild(document.createTextNode(text));
+    noteList.appendChild(newListItem);
 
 };
-function add_error() {
+function add_error(text, subtext, buttonParts) {// Function to Add Line Item Errors
+    var errorList = document.getElementById('mapping_errors');
+    var newListItem = document.createElement('li');
+    newListItem.classList.add("list-group-item", "list-group-item-danger");
+    var buttonListItem = document.createElement('div')
+    newListItem.appendChild(document.createTextNode(text));
+    if (subtext) {
+        subtext.forEach(text => {
+            var secondaryListItem = document.createElement('div');
+            secondaryListItem.classList.add("small");
+            secondaryListItem.appendChild(document.createTextNode(" - " + text));
+            newListItem.appendChild(secondaryListItem);
+        })
+    };
+    if (buttonParts) {
+        let buttonDisplay = document.createElement('button');
+        buttonDisplay.id = buttonParts.errorType;
+        buttonDisplay.innerHTML = 'click for example';
+        buttonDisplay.onclick = function () {
+            document.getElementById('buildFieldName').value = buttonParts.field;
+            document.getElementById('buildFieldFormula').value = buttonParts.formula;
+            reveal_hidden(['exampleBuildField']);
+        };
+        buttonListItem.appendChild(buttonDisplay);
+    };
+    errorList.appendChild(newListItem);
 
+    newListItem.appendChild(buttonListItem);
+    reveal_hidden(['errors'])
 };
 function reveal_hidden(arr) {//Reveals a hidden HTML element.
     arr.forEach(id => {
@@ -282,10 +340,9 @@ function reveal_hidden(arr) {//Reveals a hidden HTML element.
 function hide(arr) {//Reveals a hidden HTML element.
     arr.forEach(id => {
         let element = document.getElementById(id);
-        if (element.hidden) {
-            element.setAttribute('hidden', 'true');
-        };
-    });
+        element.hidden = true
+    })
+
 };
 
 function check_for_blank_columns(arr, allRows) {
@@ -304,13 +361,13 @@ function check_for_blank_columns(arr, allRows) {
             break
         case "text/plain":
             if (allRows[0].includes("|")) {
-                console.log('PIPES!?')
+                add_note('Delimiter: Pipes (|)')
                 delimiter = '|'
             } else if (allRows[0].includes("\t")) {
-                console.log("TABS")
+                add_note("Delimiter: TABS")
                 delimiter = /\t/g
             } else if (allRows[0].includes(",")) {
-                console.log("commas")
+                add_note("Delimiter: Commas")
                 delimiter = ","
             }
     }
@@ -387,14 +444,14 @@ function addError(text, subtext, buttonParts) {// Function to Add Line Item Erro
         buttonDisplay.onclick = function () {
             document.getElementById('buildFieldName').value = buttonParts.field;
             document.getElementById('buildFieldFormula').value = buttonParts.formula;
-            revealHidden(['exampleBuildField']);
+            reveal_hidden(['exampleBuildField']);
         };
         buttonListItem.appendChild(buttonDisplay);
     };
     errorList.appendChild(newListItem);
     errorList.appendChild(secondaryListItem);
     errorList.appendChild(buttonListItem);
-    revealHidden(['errors'])
+    reveal_hidden(['errors'])
 };
 
 
@@ -415,10 +472,12 @@ function file_data(myFile) {
     feedfile.file_size = file.size
     feedfile.file_type = file.type
     console.log(feedfile)
-}
+};
 
 function readFile(input) {
     file_data(input)
+    add_note('File Name: ' + feedfile.file_name)
+    add_note('File Type: ' + feedfile.file_type)
     clearAll()
     let file = input.files[0];
     let fileReader = new FileReader();
@@ -429,7 +488,7 @@ function readFile(input) {
         allLines = text.split('\n')
         console.log(allLines.length)
         var validInput = allLines[0]
-        addNote(allLines.length + " rows detected")
+        add_note((allLines.length - 1) + "product rows detected")
         // BUILD ARRAYS TO WORK WITH
         feedfile.merchant_layout = //Reference to the Merchant's actual dataset in an array
             validInput
