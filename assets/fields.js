@@ -131,7 +131,7 @@ var fields = {
         field_name: 'strAttribute1',
         valueTitle: 'Product Parent Grouping Id',
         type: '<type>string</type>',
-        matches: ['parentgroup', 'parentgroupid', 'groupid', 'group'],
+        matches: ['parentgroup', 'parentgroupid', 'groupid', 'group', 'parentsku', 'parentid',],
         variant: 'strProductSKU'
     }, {
         field_name: 'strAttribute2',

@@ -6,8 +6,8 @@
      word-wrap: break-word;
  }
 
- dt {
-     font-weight: bold;
+ li {
+     font-weight: 600;
      display: list-item;
      list-style-type: disc;
      list-style-position: inside;
@@ -18,6 +18,10 @@
      border-width: 1px;
      border-color: red;
 
+ }
+
+ .small {
+     font-weight: 400;
  }
 
  .mapNotes {
