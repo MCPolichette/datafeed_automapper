@@ -19,6 +19,7 @@
         <div class="row">
             <h4 class="justify-content-center">Mark's Automapper - variant edition</h4>
             <!-- <button onclick="delete_this_function(exampleColumns)">Magic Test Button</button> -->
+            <!-- <button data-bs-toggle="modal" data-bs-target="#solution-modal">">Magic Test Button</button> -->
             <button id="refresh_page" type="button" hidden class="btn btn-secondary btn-sm"
                 onClick="window.location.reload();">Map a new file. </button>
             <div id='file_input'>
@@ -119,7 +120,7 @@
                         </div>
                     </div>
 
-                    <!-- ALERTS MODAL -->
+                    <!-- Shopify/ALERTS MODAL -->
                     <div class="modal fade" id="alert-modal" data-bs-backdrop="static" data-bs-keyboard="false"
                         tabindex="-1" aria-labelledby="alert-modalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
@@ -163,42 +164,60 @@
 
 
         <hr>
-        <!-- <button type='button' id='buttonTable' target='_blank'
-            onclick='window.location.href="https://spoti.fi/3wq9qIU"'> Don't Click</button> -->
-        <div hidden class='disabled'>
-            <h4 id='updateArray'>Some required fields were not found. If it's obviously present in the Merchant's
-                feedfile, please update the fields in this HTML document</h4>
-            <h4>Notes</h4>
-            <dl id='mapNotes' class='mapNotes'></dl>
-            <div id=errors class='border'>
-                <h4>Errors</h4>
-                <dl id='mapErrors' class='mapNotes'></dl>
-            </div>
-            <div id='exampleBuildField'>
-                <h4>Example Field Builder</h4>
-                <tbody>
-                    <tr>
-                        <td valign='top' align='right'><b>#1) Field: </b></td>
-                        <td valign='top' align='left'> <input size='20' maxlength='50' id='buildFieldName'
-                                type='text'><strong> = </strong><input size='53' maxlength='255' id='buildFieldFormula'
-                                type='text'><br></td>
-                    </tr>
-                    <tr>
-                        <td valign='top' align='right'><b>Regex search for </b></td>
-                        <td valign='top' align='left'> <input size='15' maxlength='255' id='buildFieldSearch'
-                                type='text'><strong> replace with </strong><input size='30' maxlength='255'
-                                id='buildFieldReplace' type='text'></td>
-                    </tr>
-                    <tr>
-                        <td valign='top' align='right'><b>Formatting: </b></td>
-                        <td valign='top' align='left'> <select id='buildFieldFormat'>
-                                <option value=''>None</option>
-                        </td>
-                    </tr>
-                </tbody>
+        <!-- solution Modal -->
+        <div class="modal fade" id="solution-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="alert-modalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="solution-modal-title">Potential Solution</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class='container'>
+                            <h4 class="text-center" id="solution-statement"></h4>
+                            <div id="solution-text-1" class="text-center alert alert-info" role="alert">
+
+                                ...
+                            </div>
+                            <div id='exampleBuildField'>
+                                <h4>Example Field Builder</h4>
+                                <div class="border border-primary card">
+                                    <div class="card-body">
+                                        <tr>
+                                            <td valign='top' align='right'><b>#1) Field: </b></td>
+                                            <td valign='top' align='left'> <input size='20' maxlength='50'
+                                                    id='buildFieldName' type='text'><strong> =
+                                                </strong><input size='53' maxlength='255' id='buildFieldFormula'
+                                                    type='text'><br>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign='top' align='right'><b>Regex search for </b></td>
+                                            <td valign='top' align='left'> <input size='15' maxlength='255'
+                                                    id='buildFieldSearch' type='text'><strong>
+                                                    replace with </strong><input size='30' maxlength='255'
+                                                    id='buildFieldReplace' type='text'></td>
+                                        </tr>
+                                    </div>
+                                </div>
+                                <div id="solution-text-2" class="text-center alert alert-info" role="alert">
+
+                                    ...
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                    </div>
+                </div>
             </div>
         </div>
-        </p>
     </div>
     <!-- SCRIPTS! -->
     <script src="assets/app.js"></script>
