@@ -18,16 +18,16 @@ A bootstrap5-based tool to automatically map merchant datafeeds.
 
 - [x] Bootstrap for displays, allows for easy scrolling table, and buttons.
 - [x] New field arrays, and using objects to keep logic clean and readable.
-- [ ] Ability to update the mapping via DOM.
-- [ ] Add 5 or so rows of data to the display, to show which columns are blank.
+- [x] Ability to update the mapping via DOM.
 - [x] Add variant mapping.
     - [x] variant objects array, and identifiers
     - [x] method for identifying potential variant mapped feeds.
     - [x] adding a variant map row to the table display.
-    - [ ] run some sort of group ID validation.
+    - [x] run some sort of group ID validation.
     - [x] display the 'secondary feedfile' and how it should be filled out.
 
-
 ### More Goals. 
-  - [ ] Uploaded field identifies a Shopify feed and builds a map accordingly. for BOTH pre AND post FEB 2022 date. 
+  - [x] Uploaded field identifies a Shopify feed and builds a map accordingly. for BOTH pre AND post FEB 2022 date. 
+  - [ ] Loading Icon for larger files
+  
    

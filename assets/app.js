@@ -10,8 +10,6 @@ var feedfile = {
 is_variant = false;
 allLines = [];
 is_editing = false;
-
-
 function delete_this_function() {
     // !? WILL PLAY WITH THIS LATER WHEN CLEANING UP
     // fetch('./data.json')
@@ -67,42 +65,100 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                     x = map.indexOf(field.back_up[i])
                     feedfile.map[x] = field.field_name;
                     i = stop_for_loop
-                }
-
+                };
             };
         };
     });
-    required.forEach((field, index) => {
+    required.forEach((field) => {
         if (map.includes(field.field_name)) { }
         else {
-
-            let standard_suggestion = 'Try using the adjust mapping button, to insert this required field above.';
+            let standard_suggestion = {
+                suggestion: 'Try using the adjust mapping button, to insert this required field above.'
+            };
             switch (field.field_name) {
                 case 'strDepartment':
-                    add_error('unable to map a column for Department', [standard_suggestion,])
+                    add_error('unable to map a column for Department', [
+                        standard_suggestion,
+                        {
+                            suggestion: 'Force all items to have a "General" Department label upon import',
+                            button: true,
+                            suggestion_type: 'field_builder',
+                            suggestion_field: "strDepartment",
+                            suggestion_equals: "General",
+                            suggestion_statement_1: "If no Departments are available, you can use the FieldBuilder Tab to set all item's department to a chosen value.  In the example below I have set it to 'General'.",
+                            suggestion_statement_2: "Depending on the Merchant, you can choose another term, such as 'Sunglasses', 'Fishing Products' or 'Wigs for Dogs' (i.e. whatever you want) if all the products fit a particular Categorization."
+                        }
+                    ])
                     break
                 case "strProductSKU":
-                    add_error('unable to map a column for ProductSKU', [standard_suggestion,])
+                    add_error('unable to map a column for ProductSKU', [
+                        standard_suggestion
+                        ,])
                     break
                 case 'strProductName':
-                    add_error('unable to map a column for ProductName', [standard_suggestion,])
+                    add_error('unable to map a column for ProductName', [
+                        standard_suggestion,
+                        {
+                            suggestion: "Force all items to have the Product Name, just match the Product's SKU",
+                            button: true,
+                            suggestion_type: 'field_builder',
+                            suggestion_field: "strProductName",
+                            suggestion_equals: "%%strProductSKU%%",
+                            suggestion_statement_1: "In the example below, we set the Product Name to MATCH the Product SKU for ALL ITEMS",
+                            suggestion_statement_2: "This should be never really be used.  Merchants should have product names."
+                        }
+                    ])
                     break
                 case 'dblProductPrice':
-                    add_error('unable to map a column for ProductPrice', [standard_suggestion,])
+                    add_error('unable to map a column for ProductPrice', [
+                        standard_suggestion
+                        ,])
                     break
                 case 'strLargeImage':
-                    add_error('unable to map a column for LargeImage', [standard_suggestion,])
+                    add_error('unable to map a column for LargeImage', [
+                        standard_suggestion,
+                        {
+                            suggestion: "Force all items to use the merchant's logo URL, so that it can be imported",
+                            button: true,
+                            suggestion_type: 'field_builder',
+                            suggestion_field: "strLargeImage",
+                            suggestion_equals: "https://www.cat-pajamas.net/crazycatlogo.png/",
+                            suggestion_statement_1: "If no Image URLs are available, you can use the FieldBuilder Tab to set all item's images to just display to the Merchant's logo.  In the example below I have set it to an image URL for all items.",
+                            suggestion_statement_2: "This should be considered a 'last-ditch' solution.  Merchants really should be provided product Image URLs."
+                        }
+                    ])
                     break
                 case 'txtLongDescription':
-                    add_error('unable to map a column for LongDescription', [standard_suggestion,])
+                    add_error('unable to map a column for LongDescription', [
+                        standard_suggestion,
+                        {
+                            suggestion: "Force all items to have the product's Name as the description, so that it can be imported",
+                            button: true,
+                            suggestion_type: 'field_builder',
+                            suggestion_field: "txtLongDescription",
+                            suggestion_equals: "%%strProductName%%",
+                            suggestion_statement_1: "If no descriptions are available, you can use the FieldBuilder Tab to set all item's descriptions to match another value.  In the example below I have set it to just capture that item's product Name.",
+                            suggestion_statement_2: "Depending on the Merchant, you can choose another term, such as 'Sunglasses', 'Fishing Products' or 'Wigs for Dogs' (i.e. whatever you want) if all the products fit a particular Categorization."
+                        }
+                        ,])
                     break
                 case 'strBuyURL':
-                    add_error('unable to map a column for BuyURL', [standard_suggestion,])
+                    add_error('unable to map a column for BuyURL', [
+                        standard_suggestion,
+                        {
+                            suggestion: "Force all items to link to the merchant's home-page, so that it can be imported",
+                            button: true,
+                            suggestion_type: 'field_builder',
+                            suggestion_field: "strBuyURL",
+                            suggestion_equals: "https://www.WigsForDogs.com",
+                            suggestion_statement_1: "If no URLs are available, you can use the FieldBuilder Tab to set all item's BUY_URLs to just direct to the Merchant's website.  In the example below I have set it apply the primary URL for all items..",
+                            suggestion_statement_2: "This should be considered a 'last-ditch' solution.  Merchants really should be provided product URLs."
+                        }
+                        ,])
                     break
             }
-        }
-    })
-
+        };
+    });
     console.log(feedfile);
     build_pipe_display();
     build_mapped_table("standard");
@@ -139,7 +195,6 @@ function is_editing_toggle() {
         build_mapped_table('standard');
     };
 };
-
 function variant_toggle() {
     if (is_variant) {
         build_mapped_table('standard');
@@ -297,14 +352,6 @@ function add_note(text, subtext) {
     newListItem.classList.add("list-group-item");
     newListItem.appendChild(document.createTextNode(text));
     noteList.appendChild(newListItem);
-
-};
-function add_error(text, subtext, buttonParts) {// Function to Add Line Item Errors
-    var errorList = document.getElementById('mapping_errors');
-    var newListItem = document.createElement('li');
-    newListItem.classList.add("list-group-item", "list-group-item-danger");
-    var buttonListItem = document.createElement('div')
-    newListItem.appendChild(document.createTextNode(text));
     if (subtext) {
         subtext.forEach(text => {
             var secondaryListItem = document.createElement('div');
@@ -313,21 +360,48 @@ function add_error(text, subtext, buttonParts) {// Function to Add Line Item Err
             newListItem.appendChild(secondaryListItem);
         })
     };
-    if (buttonParts) {
-        let buttonDisplay = document.createElement('button');
-        buttonDisplay.id = buttonParts.errorType;
-        buttonDisplay.innerHTML = 'click for example';
-        buttonDisplay.onclick = function () {
-            document.getElementById('buildFieldName').value = buttonParts.field;
-            document.getElementById('buildFieldFormula').value = buttonParts.formula;
-            reveal_hidden(['exampleBuildField']);
-        };
-        buttonListItem.appendChild(buttonDisplay);
+
+};
+function add_error(text, subtext, buttonParts) {// Function to Add Line Item Errors
+    var errorList = document.getElementById('mapping_errors');
+    var newListItem = document.createElement('li');
+    newListItem.classList.add("list-group-item", 'position-relative', "list-group-item-danger");
+    var buttonListItem = document.createElement('div')
+    newListItem.appendChild(document.createTextNode(text));
+    if (subtext) {
+        subtext.forEach(object => {
+            let button_html = document.createElement('div')
+            if (object.button) {
+                console.log(object)
+                switch (object.suggestion_type) {
+                    case 'field_builder':
+                        let button_display = document.createElement('button');
+                        button_display.setAttribute("data-bs-toggle", "modal");
+                        button_display.setAttribute('data-bs-target', "#solution-modal")
+                        button_display.innerHTML = 'Example';
+                        button_display.classList.add('btn-clipboard', 'btn-outline-secondary', 'position-absolute', 'end-0')
+                        button_display.onclick = function () {
+                            document.getElementById('buildFieldName').value = object.suggestion_field;
+                            document.getElementById('buildFieldFormula').value = object.suggestion_equals;
+                            document.getElementById('solution-text-1').innerHTML = object.suggestion_statement_1;
+                            document.getElementById('solution-text-2').innerHTML = object.suggestion_statement_2;
+
+                        };
+                        button_html = button_display
+                        break
+
+                }
+            }
+            var secondaryListItem = document.createElement('div');
+            secondaryListItem.classList.add("small");
+            secondaryListItem.appendChild(document.createTextNode(" - " + object.suggestion));
+            secondaryListItem.appendChild(button_html)
+            newListItem.appendChild(secondaryListItem);
+        })
     };
     errorList.appendChild(newListItem);
-
     newListItem.appendChild(buttonListItem);
-    reveal_hidden(['errors'])
+
 };
 function reveal_hidden(arr) {//Reveals a hidden HTML element.
     arr.forEach(id => {
@@ -414,12 +488,12 @@ function copyToClipboard(id) {// Create a single text value, to clipboard
 
 };
 function clearAll() {  // function that clears all elements
-    document.getElementsByClassName('mapView').innerHTML = '';
-    document.getElementsByClassName('table_map').innerHTML = '';
-    is_variant = false;
-    document.getElementById('mapNotes').innerHTML = '';
-    document.getElementById('mapErrors').innerHTML = '';
-    hide(['exampleBuildField'])
+    // document.getElementsByClassName('mapView').innerHTML = '';
+    // document.getElementsByClassName('table_map').innerHTML = '';
+    // is_variant = false;
+    // document.getElementById('mapNotes').innerHTML = '';
+    // document.getElementById('mapErrors').innerHTML = '';
+    // hide(['exampleBuildField'])
 };
 function addNote(text, subtext) {// Function to Add Line Item Notes
     var noteList = document.getElementById('mapNotes');
@@ -475,20 +549,19 @@ function file_data(myFile) {
 };
 
 function readFile(input) {
-    file_data(input)
-    add_note('File Name: ' + feedfile.file_name)
-    add_note('File Type: ' + feedfile.file_type)
-    clearAll()
+    file_data(input);
+
+    clearAll();
     let file = input.files[0];
     let fileReader = new FileReader();
-    var allLines = []
+    var allLines = [];
     fileReader.readAsText(file);
     fileReader.onload = function () {
         var text = fileReader.result;
-        allLines = text.split('\n')
-        console.log(allLines.length)
-        var validInput = allLines[0]
-        add_note((allLines.length - 1) + "product rows detected")
+        allLines = text.split('\n');
+        console.log(allLines.length);
+        var validInput = allLines[0];
+        add_note('File Data:', ['file Name: ' + feedfile.file_name, 'File Type: ' + feedfile.file_type, 'File size: ' + feedfile.file_size, (allLines.length - 1) + "product rows detected"]);
         // BUILD ARRAYS TO WORK WITH
         feedfile.merchant_layout = //Reference to the Merchant's actual dataset in an array
             validInput
@@ -505,7 +578,7 @@ function readFile(input) {
             .replaceAll("|", "<newcolumn>")
             .split("<newcolumn>");
         // -----------------------
-        //!? SUPER LAZY SHOPY FEED VERSION ONE CHECKER
+        //!? SUPER LAZY SHOPIFY FEED VERSION ONE CHECKER
         // =========================================
         console.log(feedfile.merchant_layout.length)
         console.log(feedfile.first_row)
@@ -518,10 +591,8 @@ function readFile(input) {
             document.getElementById('alert-statement').innerHTML = "This appears to be a Shopify Datafeed"
             document.getElementById('alert-image-1').src = "assets/shopify_september_2022.png"
             document.getElementById('alert-image-2').src = "assets/second_feed.png"
-            shopify_modal.show()
-        }
-
-        // =========================================
+            shopify_modal.show();
+        };
         var column_count = feedfile.merchant_layout.length
         var firstArray = //First step in building an array from Merchant Data (removing delimiters, any capitalizations and repetitive values)
             validInput.toLowerCase()
@@ -546,16 +617,14 @@ function readFile(input) {
         console.log(feedfile.variant_map)
         for (i = 0; i < column_count; i++) {
             feedfile.variant_map.push("")
-
-        }
-        console.log(feedfile)
-
+        };
+        console.log(feedfile);
         if (allLines.length > 50) {
             allLines.splice(51, allLines.length)
-        }
+        };
         check_for_blank_columns(firstArray, allLines)
         determine_fields(firstArray); //FIRST MAPPING STEP
-        console.log(feedfile)
+        console.log(feedfile);
     };
     fileReader.onerror = function () {
         alert(fileReader.error);
