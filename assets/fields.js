@@ -180,7 +180,7 @@ var fields = {
         valueTitle: 'Product Availability',
         type: '<type>string</type>',
         matches: ['availability', 'available'],
-        variant: ''
+        variant: 'variant-available'
     }, {
         field_name: 'txtAttribute1',
         valueTitle: 'Variants XML',
