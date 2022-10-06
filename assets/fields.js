@@ -58,7 +58,7 @@ var fields = {
     }, {
         field_name: "strProductSKU",
         matches: ['sku', 'id', 'number', 'idnumber'],
-        variant: "variant-sku"
+        variant: "strProductSKU"
     }, {
         field_name: 'strProductName',
         matches: ['name', 'title'],
@@ -132,7 +132,7 @@ var fields = {
         valueTitle: 'Product Parent Grouping Id',
         type: '<type>string</type>',
         matches: ['parentgroup', 'parentgroupid', 'groupid', 'group', 'parentsku', 'parentid',],
-        variant: 'strProductSKU'
+        variant: 'variant-sku'
     }, {
         field_name: 'strAttribute2',
         valueTitle: 'Product Color',
