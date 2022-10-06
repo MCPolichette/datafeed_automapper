@@ -28,6 +28,10 @@ A bootstrap5-based tool to automatically map merchant datafeeds.
 
 ### More Goals. 
   - [x] Uploaded field identifies a Shopify feed and builds a map accordingly. for BOTH pre AND post FEB 2022 date. 
-  - [ ] Loading Icon for larger files
-  
+  - [ ] Loading Icon for larger files 
+  - [ ]check first 50 rows of required fields, for blanks, to offer field builder suggestions to make sure as many rows import as possible.
+  - [ ]An XML modal, just like the shopify one, that inspects the file and recommends a template.
+  - [ ]Notes regarding how many parent Skus are identified compared to the total number rows.
+  - [ ]adding links to OTHER troubleshooting steps / and solutions.. to make that page a ONE STOP datafeed troubleshooting solution.
+
    
