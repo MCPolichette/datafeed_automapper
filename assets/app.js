@@ -45,9 +45,11 @@ function make_map_for_variants() {
         feedfile.map_for_variants[i] = feedfile.map[i]
         if (feedfile.map_for_variants[i] == 'strProductSKU') {
             feedfile.map_for_variants[i] = 'strAttribute1'
+            feedfile.variant_map[i] = 'variant-sku'
             var t = i
         } if ((feedfile.map_for_variants[i] == 'strAttribute1') && (t != i)) {
             feedfile.map_for_variants[i] = 'strProductSKU'
+            feedfile.variant_map[i] = 'strProductSKU'
         }
     };
 };
@@ -183,11 +185,11 @@ function check_variant_mapping() {
 function is_editing_toggle() {
     if (is_editing) {
         is_editing = false;
-        document.getElementById('editor_warning').hidden = true
+        // document.getElementById('editor_warning').hidden = true
     }
     else {
         is_editing = true;
-        document.getElementById('editor_warning').hidden = false
+        // document.getElementById('editor_warning').hidden = false
     }
     if (is_variant) {
         build_mapped_table('variant');
@@ -196,6 +198,7 @@ function is_editing_toggle() {
     };
 };
 function variant_toggle() {
+    if (is_editing) { is_editing_toggle() }
     if (is_variant) {
         build_mapped_table('standard');
         build_pipe_display('standard');
@@ -275,7 +278,7 @@ function build_select_options(i) {
     var table = document.getElementById("table_map");
     var selection = document.createElement('select')
     selection.id = ('MapAdjuster_' + i)
-    selection.setAttribute("onchange", 'update_map(this.value,this.options[0].value)');
+    selection.setAttribute("onchange", 'update_map(this.value,this.options[0].value,' + i + ')');
     var option = document.createElement('option')
     option.value = use_this_map[i];
     option.text = use_this_map[i];
@@ -297,30 +300,35 @@ function build_select_options(i) {
             selection.add(new_option)
         }
     }
-    console.log(selection)
+    // console.log(selection)
     table.rows[1].cells[(i + 1)].insertAdjacentHTML("beforeend", selection.outerHTML);
     selection.selectedIndex = use_this_map.indexOf(use_this_map[i])
 };
-function update_map(new_value, current_value) {
+function update_map(new_value, current_value, index) {
     if (is_variant) {
         var use_this_map = feedfile.map_for_variants;
     } else {
         var use_this_map = feedfile.map;
     };
     console.log(new_value)
-    let index = use_this_map.indexOf(current_value)
     if (new_value.length === 0) {
         feedfile.map[index] = ''
         feedfile.map_for_variants[index] = ''
         feedfile.variant_map[index] = ''
     } else {
-
         let all = fields.all
         let updated_variant = all.find(x => x.field_name === new_value).variant
         console.log(updated_variant)
-        console.log(new_value, current_value,)
-        if (is_variant) { }
-        feedfile.map[index] = new_value
+        console.log(new_value, current_value, index)
+        let standard_map_value = new_value
+        if (is_variant) {
+            if (new_value === "strAttribute1") {
+                standard_map_value = 'strProductSKU'
+            } else if (new_value === "strProductSKU") {
+                standard_map_value = 'strAttribute1'
+            } else standard_map_value = new_value
+        }
+        feedfile.map[index] = standard_map_value
         feedfile.map_for_variants[index] = new_value
         feedfile.variant_map[index] = updated_variant
     }
