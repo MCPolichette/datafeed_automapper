@@ -462,8 +462,7 @@ function check_for_blank_columns(arr, allRows) {
                 .replace("\r", "").split(delimiter);
             console.log(x.length)
             if (x.length === blank_columns.length) {
-                blank_row.push(x)
-                console.log(x)
+                blank_row.push(x);
                 for (j = 0; j < blank_columns.length; j++) {
                     if (x[j] != ('')) {
                         blank_columns[j] = false
@@ -590,7 +589,8 @@ function readFile(input) {
         // =========================================
         console.log(feedfile.merchant_layout.length)
         console.log(feedfile.first_row)
-        if ((feedfile.merchant_layout.length === 33) && (feedfile.merchant_layout[31] == shopify_API_feed_examples[0].column_layout[31])) {
+        console.log(feedfile.merchant_layout.length, feedfile.merchant_layout[31])
+        if ((feedfile.merchant_layout[31] == shopify_API_feed_examples[0].column_layout[31])) {
             // alert("this is a shopify Feed")
             console.log('its a match')
             var shopify_modal = new bootstrap.Modal(document.getElementById('alert-modal'), {
