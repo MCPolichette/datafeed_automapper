@@ -424,6 +424,15 @@ function hide(arr) {//Reveals a hidden HTML element.
     })
 
 };
+function copyToClipboard(id) {// Create a single text value, to clipboard
+    let copy = '';
+    if ((document.getElementById(id)) == null) {
+        copy = id
+    }
+    else { copy = document.getElementById(id).innerText };
+    navigator.clipboard.writeText(copy);
+
+};
 
 function check_for_blank_columns(arr, allRows) {
     let delimiter = ''
