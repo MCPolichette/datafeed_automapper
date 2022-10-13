@@ -121,7 +121,7 @@ var fields = {
         variant: ''
     }, {
         field_name: 'strMediumImageURL',
-        matches: ['mediumimageurl', 'mediumimage', 'mediumimagelink', 'imageurlmedium'],
+        matches: ['mediumimageurl', 'mediumimage', 'mediumimagelink', 'imageurlmedium', 'additionalimagelink', 'additionalimage', 'additionalimageurl'],
         variant: ''
     }, {
         field_name: 'txtShortDescription',

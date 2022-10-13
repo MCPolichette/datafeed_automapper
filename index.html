@@ -14,10 +14,12 @@
 </head>
 
 <body>
-
-    <div class='container d-flex flex-column min-vh-100 justify-content-center align-items-center'>
+    <div class="container-sm fixed-top">
+        <br>
+        <h4 id="title" class="justify-content-center "><strong>Mark's Automapper</strong></h4>
+    </div>
+    <div class='container-fluid d-flex flex-column min-vh-100 justify-content-center align-items-center'>
         <div class="row">
-            <h4 class="justify-content-center">Mark's Automapper - variant edition</h4>
             <!-- <button onclick="delete_this_function(exampleColumns)">Magic Test Button</button> -->
             <!-- <button data-bs-toggle="modal" data-bs-target="#solution-modal">">Magic Test Button</button> -->
             <button id="refresh_page" type="button" hidden class="btn btn-secondary btn-sm"
@@ -27,12 +29,16 @@
                 <input onchange="readFile(this)" class="form-control form-control-lg" id="formFileLg" type="file">
             </div>
         </div>
+        <div hidden='true' id="loading" class="text-primary spinner-border" style="width: 3rem; height: 3rem;"
+            role="status">
+            <span class="sr-only"></span>
+        </div>
         <div class='container' hidden id="post_upload_display">
             <div class='row'>
                 <div class="col-12">
                     <br>
                     <div id='tableDisplay'>
-                        <div class="table-responsive">
+                        <div class="table-responsive shadow p-3 mb-5 bg-body rounded">
                             <table id="table_map"
                                 class="table table-sm align-middle table-bordered border-primary map_layout">
                             </table>
@@ -56,6 +62,7 @@
                             </ul>
                         </div>
                     </div>
+                    <br>
                     <div class="d-grid col-6 mx-auto gap-2">
                         <button id="variant-toggle" type="button" hidden class="btn btn-secondary btn-lg"
                             onclick="variant_toggle()">Variant mapping is
