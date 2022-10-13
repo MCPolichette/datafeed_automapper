@@ -31,3 +31,15 @@
  .error {
      color: red;
  }
+
+ #title {
+     transition-timing-function: ease-in;
+     transition: transform 2s;
+ }
+
+
+ #title:hover {
+     /* width: 300%; */
+     transform: rotate(-8deg);
+     color: blue
+ }

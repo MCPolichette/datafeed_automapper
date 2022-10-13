@@ -5,20 +5,13 @@ var feedfile = {
     variant_map: [],
     map_for_variants: [],
     blank_columns: [],
+    contains_empty_values: [],
     file_type: ''
 };
 is_variant = false;
 allLines = [];
 is_editing = false;
-function delete_this_function() {
-    // !? WILL PLAY WITH THIS LATER WHEN CLEANING UP
-    // fetch('./data.json')
-    //     .then((response) => response.json())
-    //     .then((json) => console.log(json));
-    // ===========================================================
-    // feedfile.map = exampleColumns;
-    // determine_fields(exampleColumns)
-};
+/////////// Functions //////////
 function determine_fields(arr) {
     console.log(arr)
     arr.forEach((array_element, index) => {
@@ -37,6 +30,7 @@ function determine_fields(arr) {
             }));
     });
     make_map_for_variants();
+    loading_toggle();
     check_required_fields();
 };
 function make_map_for_variants() {
@@ -182,6 +176,11 @@ function check_variant_mapping() {
         // reveal_hidden('variant-toggle')
     };
 };
+function loading_toggle() {
+    let loading = document.getElementById('loading');
+    if (loading.hidden) { loading.hidden = false }
+    else loading.hidden = true
+}
 function is_editing_toggle() {
     if (is_editing) {
         is_editing = false;
@@ -254,7 +253,7 @@ function build_mapped_table(table_type) {
 
     // Identifies empty columns, and highlights header row accordingly.
     table.rows[0].classList.add('table-info', 'h5')
-    if (feedfile.blank_columns.length > 0) {
+    if ((feedfile.blank_columns.length > 0) && (feedfile.blank_columns.length != feedfile.map.length)) {
         feedfile.blank_columns.forEach((empty_column) => {
             table.rows[0].cells[empty_column + 1].classList.add('table-warning');
             table.rows[0].cells[empty_column + 1].insertAdjacentHTML("beforeend", "<br><small>(empty column)</small>");
@@ -267,7 +266,6 @@ function build_mapped_table(table_type) {
         reveal_hidden(['variant-toggle'])
     };
     reveal_hidden(['post_upload_display', 'refresh_page']);
-    hide(['file_input']);
 };
 function build_select_options(i) {
     if (is_variant) {
@@ -430,8 +428,10 @@ function hide(arr) {//Reveals a hidden HTML element.
 function check_for_blank_columns(arr, allRows) {
     let delimiter = ''
     let blank_columns = new Array(arr.length)
+    let test_columns = new Array(arr.length)
     for (k = 0; k < arr.length; k++) {
-        blank_columns[k] = true;
+        blank_columns[k] = false;
+        test_columns[k] = 0;
     }
     console.log(blank_columns)
     switch (feedfile.file_type) {
@@ -452,99 +452,41 @@ function check_for_blank_columns(arr, allRows) {
                 add_note("Delimiter: Commas")
                 delimiter = ","
             }
-    }
+    };
+    let blank_row = new Array()
     console.log(delimiter)
     if (delimiter == "") { } else {
         console.log(allRows[1])
         for (i = 1; i < allRows.length - 1; i++) {
-            let blank_row = new Array()
             let x = allRows[i]
                 .replace("\r", "").split(delimiter);
             console.log(x.length)
             if (x.length === blank_columns.length) {
                 blank_row.push(x);
                 for (j = 0; j < blank_columns.length; j++) {
-                    if (x[j] != ('')) {
-                        blank_columns[j] = false
+                    if (x[j] === ('')) {
+                        test_columns[j] = test_columns[j] + 1
                     };
                 };
             };
         };
     };
+    console.log(test_columns);
+    test_columns.forEach((el, index) => {
+        if (el === blank_row.length) {
+            blank_columns[index] = true
+        };
+        if ((el > 0) && (el < blank_row.length)) {
+            feedfile.contains_empty_values.push(index)
+        }
+    });
     blank_columns.forEach((el, index) => {
-
         if (el === true) {
             feedfile.blank_columns.push(index)
-
-        }
-    })
-    console.log(blank_columns);
-    console.log(feedfile.blank_columns)
-};
-
-
-// !? All new scripting above this line!
-
-function copyToClipboard(id) {// Create a single text value, to clipboard
-    let copy = '';
-    if ((document.getElementById(id)) == null) {
-        copy = id
-    }
-    else { copy = document.getElementById(id).innerText };
-    navigator.clipboard.writeText(copy);
-
-};
-function clearAll() {  // function that clears all elements
-    // document.getElementsByClassName('mapView').innerHTML = '';
-    // document.getElementsByClassName('table_map').innerHTML = '';
-    // is_variant = false;
-    // document.getElementById('mapNotes').innerHTML = '';
-    // document.getElementById('mapErrors').innerHTML = '';
-    // hide(['exampleBuildField'])
-};
-function addNote(text, subtext) {// Function to Add Line Item Notes
-    var noteList = document.getElementById('mapNotes');
-    var newListItem = document.createElement('dt');
-    newListItem.appendChild(document.createTextNode(text));
-    noteList.appendChild(newListItem);
-};
-function addError(text, subtext, buttonParts) {// Function to Add Line Item Errors
-    var errorList = document.getElementById('mapErrors');
-    var newListItem = document.createElement('dt');
-    var secondaryListItem = document.createElement('dd');
-    newListItem.setAttribute('class', 'error')
-    var buttonListItem = document.createElement('dd')
-    newListItem.appendChild(document.createTextNode(text));
-    if (subtext) {
-        secondaryListItem.appendChild(document.createTextNode(subtext));
-    };
-    if (buttonParts) {
-        let buttonDisplay = document.createElement('button');
-        buttonDisplay.id = buttonParts.errorType;
-        buttonDisplay.innerHTML = 'click for example';
-        buttonDisplay.onclick = function () {
-            document.getElementById('buildFieldName').value = buttonParts.field;
-            document.getElementById('buildFieldFormula').value = buttonParts.formula;
-            reveal_hidden(['exampleBuildField']);
         };
-        buttonListItem.appendChild(buttonDisplay);
-    };
-    errorList.appendChild(newListItem);
-    errorList.appendChild(secondaryListItem);
-    errorList.appendChild(buttonListItem);
-    reveal_hidden(['errors'])
-};
-
-
-function buttonConstruction(newError, newField, newReplace, newRegex, newReplaceWith) {
-    let buttonParts = { //BUILDING Button OBject (parts).. for ERRORS
-        errorType: newError,
-        formula: newReplace,
-        field: newField,
-        regex: newRegex,
-        replacWith: newReplaceWith,
-    };
-    return buttonParts
+    });
+    console.log(blank_columns);
+    console.log(feedfile.blank_columns);
 };
 function file_data(myFile) {
     var file = myFile.files[0];
@@ -554,11 +496,10 @@ function file_data(myFile) {
     feedfile.file_type = file.type
     console.log(feedfile)
 };
-
 function readFile(input) {
     file_data(input);
-
-    clearAll();
+    loading_toggle();
+    hide(['file_input']);
     let file = input.files[0];
     let fileReader = new FileReader();
     var allLines = [];
@@ -632,6 +573,7 @@ function readFile(input) {
         };
         check_for_blank_columns(firstArray, allLines)
         determine_fields(firstArray); //FIRST MAPPING STEP
+
         console.log(feedfile);
     };
     fileReader.onerror = function () {
