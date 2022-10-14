@@ -62,8 +62,10 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                 };
                 switch (field.field_name) {
                     case 'strDepartment':
-                        add_error('Some Item have blank Department values, which is required and will not import', [
+                        add_error('Some Item have blank Department values, which is required.  These items will not import', [
                             standard_suggestion,
+                            ,
+                            { suggestion: "review the Merchant Provided columns to see if there is a MORE complete column to map for this value (e.g. Category or SubCategory)" },
                             {
                                 suggestion: 'Create a Field Builder Rule that sets any "Blank" Departments to have a "General" Department label upon import',
                                 button: true,
@@ -78,7 +80,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                         ])
                         break
                     case "strProductSKU":
-                        add_error('Some Item have blank SKU values, which is required and will not import', [
+                        add_error('Some Item have blank SKU values, which is required.  These items will not import', [
                             standard_suggestion,
                             {
                                 suggestion: "Create a Field Builder Rule that sets any 'Blank' Product Skus to match that Product's Name",
@@ -94,7 +96,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                             ,])
                         break
                     case 'strProductName':
-                        add_error('Some Item have blank Product Names values, which is required and will not import', [
+                        add_error('Some Item have blank Product Names values, which is required.  These items will not import', [
                             standard_suggestion,
                             {
                                 suggestion: "Create a Field Builder Rule that sets any 'Blank' ProductNames to match that Product's SKU",
@@ -110,13 +112,16 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                         ])
                         break
                     case 'dblProductPrice':
-                        add_error('Some Item have blank price values, which is required and will not import', [
-                            standard_suggestion
+                        add_error('Some Item have blank price values, which is required.  These items will not import', [
+                            standard_suggestion,
+                            ,
+                            { suggestion: "review the Merchant Provided columns to see if there is a MORE complete column to map for this value (e.g. strSalePrice). Also notify the Merchant that item's missing a default price will not import." },
                             ,])
                         break
                     case 'strLargeImage':
-                        add_error('unable to map a column for LargeImage', [
+                        add_error('Some Item have blank Image values, which is required.  These items will not import', [
                             standard_suggestion,
+                            { suggestion: "review the Merchant Provided columns to see if there is a MORE complete column to map for this value (e.g. Medium Image or Thumbnail Image" },
                             {
                                 suggestion: "Create a Field Builder Rule that sets any 'Blank' image listings to use the merchant's logo URL, so that it can be imported",
                                 button: true,
@@ -131,8 +136,10 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                         ])
                         break
                     case 'txtLongDescription':
-                        add_error('Some Item have blank Description values, which is required and will not import', [
+                        add_error('Some Item have blank Description values, which is required.  These items will not import', [
                             standard_suggestion,
+                            ,
+                            { suggestion: "review the Merchant Provided columns to see if there is a MORE complete column to map for this value (e.g. short description" },
                             {
                                 suggestion: "Create a Field Builder Rule that sets any 'Blank' description listings to use the product's Name as the description, so that it can be imported",
                                 button: true,
@@ -147,7 +154,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                             ,])
                         break
                     case 'strBuyURL':
-                        add_error('Some Item have blank Buy URL values, which is required and will not import', [
+                        add_error('Some Item have blank Buy URL values, which is required.  These items will not import', [
                             standard_suggestion,
                             {
                                 suggestion: "Create a Field Builder Rule that sets any 'Blank' But URL listings to use the product's primary URL as the URL, so that it can be imported",
@@ -610,7 +617,22 @@ function check_for_blank_columns(arr, allRows) {
             feedfile.blank_columns.push(index)
         };
     });
-    add_note('Checked ' + blank_row.length + " rows for missing data", [feedfile.blank_columns.length + " columns had NO DATA", feedfile.contains_empty_values.length + " columns had empty values in some rows"])
+    let incomplete_columns = [];
+    let empty_column_names = [];
+    if (feedfile.contains_empty_values.length > 0) {
+        feedfile.contains_empty_values.forEach(column => {
+            incomplete_columns.push(feedfile.merchant_layout[column])
+        })
+    } else {
+        incomplete_columns.push('no other notes')
+    }
+
+    if (feedfile.blank_columns.length > 0) {
+        feedfile.blank_columns.forEach(column => {
+            empty_column_names.push(feedfile.merchant_layout[column])
+        })
+    } else { empty_column_names.push('no other notes') }
+    add_note('Checked ' + blank_row.length + " rows for missing data", [feedfile.blank_columns.length + " columns were completely empty and contained NO DATA - (" + empty_column_names.toString() + ")", feedfile.contains_empty_values.length + " columns had empty values in some rows \n - (" + incomplete_columns.toString() + ")"])
     console.log(blank_columns);
     console.log(feedfile.blank_columns);
 };
