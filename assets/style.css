@@ -39,7 +39,7 @@
 
 
  #title:hover {
-     /* width: 300%; */
-     transform: rotate(-8deg);
-     color: blue
+     transform: rotate(-180deg);
+     color: blue;
+
  }
