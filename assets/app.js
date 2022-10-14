@@ -62,7 +62,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                 };
                 switch (field.field_name) {
                     case 'strDepartment':
-                        add_error('Some Item rows do not contain a Department value. These items will not import', [
+                        add_error('Some Item have blank Department values, which is required and will not import', [
                             standard_suggestion,
                             {
                                 suggestion: 'Create a Field Builder Rule that sets any "Blank" Departments to have a "General" Department label upon import',
@@ -78,7 +78,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                         ])
                         break
                     case "strProductSKU":
-                        add_error('Some items have a blank value for ProductSKU', [
+                        add_error('Some Item have blank SKU values, which is required and will not import', [
                             standard_suggestion,
                             {
                                 suggestion: "Create a Field Builder Rule that sets any 'Blank' Product Skus to match that Product's Name",
@@ -94,7 +94,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                             ,])
                         break
                     case 'strProductName':
-                        add_error('unable to map a column for ProductName', [
+                        add_error('Some Item have blank Product Names values, which is required and will not import', [
                             standard_suggestion,
                             {
                                 suggestion: "Create a Field Builder Rule that sets any 'Blank' ProductNames to match that Product's SKU",
@@ -110,7 +110,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                         ])
                         break
                     case 'dblProductPrice':
-                        add_error('unable to map a column for ProductPrice', [
+                        add_error('Some Item have blank price values, which is required and will not import', [
                             standard_suggestion
                             ,])
                         break
@@ -131,7 +131,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                         ])
                         break
                     case 'txtLongDescription':
-                        add_error('unable to map a column for LongDescription', [
+                        add_error('Some Item have blank Description values, which is required and will not import', [
                             standard_suggestion,
                             {
                                 suggestion: "Create a Field Builder Rule that sets any 'Blank' description listings to use the product's Name as the description, so that it can be imported",
@@ -147,7 +147,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                             ,])
                         break
                     case 'strBuyURL':
-                        add_error('unable to map a column for BuyURL', [
+                        add_error('Some Item have blank Buy URL values, which is required and will not import', [
                             standard_suggestion,
                             {
                                 suggestion: "Create a Field Builder Rule that sets any 'Blank' But URL listings to use the product's primary URL as the URL, so that it can be imported",
@@ -513,7 +513,6 @@ function add_error(text, subtext, buttonParts) {// Function to Add Line Item Err
                         };
                         button_html = button_display
                         break
-
                 }
             }
             var secondaryListItem = document.createElement('div');
@@ -525,7 +524,6 @@ function add_error(text, subtext, buttonParts) {// Function to Add Line Item Err
     };
     errorList.appendChild(newListItem);
     newListItem.appendChild(buttonListItem);
-
 };
 function reveal_hidden(arr) {//Reveals a hidden HTML element.
     arr.forEach(id => {
@@ -612,7 +610,7 @@ function check_for_blank_columns(arr, allRows) {
             feedfile.blank_columns.push(index)
         };
     });
-    add_note('checked ' + blank_row.length + " rows for missing data", [feedfile.blank_columns.length + " columns had NO DATA", feedfile.contains_empty_values.length + " columns had empty values in some rows"])
+    add_note('Checked ' + blank_row.length + " rows for missing data", [feedfile.blank_columns.length + " columns had NO DATA", feedfile.contains_empty_values.length + " columns had empty values in some rows"])
     console.log(blank_columns);
     console.log(feedfile.blank_columns);
 };
@@ -701,7 +699,6 @@ function readFile(input) {
         };
         check_for_blank_columns(firstArray, allLines)
         determine_fields(firstArray); //FIRST MAPPING STEP
-
         console.log(feedfile);
     };
     fileReader.onerror = function () {
