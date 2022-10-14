@@ -43,7 +43,7 @@ function make_map_for_variants() {
             var t = i
         } if ((feedfile.map_for_variants[i] == 'strAttribute1') && (t != i)) {
             feedfile.map_for_variants[i] = 'strProductSKU'
-            feedfile.variant_map[i] = 'strProductSKU'
+            feedfile.variant_map[i] = 'strProductSKU';
         }
     };
 };
@@ -51,8 +51,119 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
     let required = fields.required;
     let map = feedfile.map;
     let stop_for_loop = 100; //This is a totally Lazy way, but super successfull way to do this. 
-    required.forEach((field, index) => {
+    required.forEach((field) => {
         if (map.includes(field.field_name)) {
+            let index = (map.indexOf(field.field_name))
+            if (feedfile.contains_empty_values.includes(index)) {
+                // !? NEW SWITCH FOR  MISSING REQUIRED FIELDS
+                // add_error(field.field_name + ' is empty in some rows', [{ suggestion: "OOPS!" }])
+                let standard_suggestion = {
+                    suggestion: 'If this a small amount, it can be ignored.'
+                };
+                switch (field.field_name) {
+                    case 'strDepartment':
+                        add_error('Some Item have blank Department values, which is required and will not import', [
+                            standard_suggestion,
+                            {
+                                suggestion: 'Create a Field Builder Rule that sets any "Blank" Departments to have a "General" Department label upon import',
+                                button: true,
+                                suggestion_type: 'field_builder',
+                                suggestion_field: "strDepartment",
+                                suggestion_regex: '',
+                                suggestion_equals: '',
+                                suggestion_replace: 'General',
+                                suggestion_statement_1: "If some items are missing Department, and aren't importing. You can use the FieldBuilder Tab to set any blank departments to a chosen value.  In the example below I have set it to 'General'.",
+                                suggestion_statement_2: "Depending on the Merchant, you can choose another term, such as 'Sunglasses', 'Fishing Products' or 'Wigs for Dogs' (i.e. whatever you want) if all the products fit a particular Categorization."
+                            }
+                        ])
+                        break
+                    case "strProductSKU":
+                        add_error('Some Item have blank SKU values, which is required and will not import', [
+                            standard_suggestion,
+                            {
+                                suggestion: "Create a Field Builder Rule that sets any 'Blank' Product Skus to match that Product's Name",
+                                button: true,
+                                suggestion_type: 'field_builder',
+                                suggestion_field: "strProductSKU",
+                                suggestion_regex: '#^$#',
+                                suggestion_equals: '',
+                                suggestion_replace: "%%strProductName%%",
+                                suggestion_statement_1: "In the example below, we regex for 'blank' Product SKUs and replace blanks with the Product's Name",
+                                suggestion_statement_2: "This should be never really be used.  Merchants should have product names."
+                            }
+                            ,])
+                        break
+                    case 'strProductName':
+                        add_error('Some Item have blank Product Names values, which is required and will not import', [
+                            standard_suggestion,
+                            {
+                                suggestion: "Create a Field Builder Rule that sets any 'Blank' ProductNames to match that Product's SKU",
+                                button: true,
+                                suggestion_type: 'field_builder',
+                                suggestion_field: "strProductName",
+                                suggestion_regex: '#^$#',
+                                suggestion_equals: '',
+                                suggestion_replace: "%%strProductSKU%%",
+                                suggestion_statement_1: "In the example below, we regex for 'blank' Product Names and replace blanks with the Product SKU",
+                                suggestion_statement_2: "This should be never really be used.  Merchants should have product names."
+                            }
+                        ])
+                        break
+                    case 'dblProductPrice':
+                        add_error('Some Item have blank price values, which is required and will not import', [
+                            standard_suggestion
+                            ,])
+                        break
+                    case 'strLargeImage':
+                        add_error('unable to map a column for LargeImage', [
+                            standard_suggestion,
+                            {
+                                suggestion: "Create a Field Builder Rule that sets any 'Blank' image listings to use the merchant's logo URL, so that it can be imported",
+                                button: true,
+                                suggestion_type: 'field_builder',
+                                suggestion_field: "strLargeImage",
+                                suggestion_regex: '#^$#',
+                                suggestion_equals: '',
+                                suggestion_replace: "https://www.cat-pajamas.net/crazycatlogo.png/",
+                                suggestion_statement_1: "If some items are missing an Image URL. Use the FieldBuilder Tab to set all 'blank' item images to just display to the Merchant's logo.  In the example below I have set it to an image URL.",
+                                suggestion_statement_2: "This should be considered a 'last-ditch' solution.  Merchants really should be provided product Image URLs."
+                            }
+                        ])
+                        break
+                    case 'txtLongDescription':
+                        add_error('Some Item have blank Description values, which is required and will not import', [
+                            standard_suggestion,
+                            {
+                                suggestion: "Create a Field Builder Rule that sets any 'Blank' description listings to use the product's Name as the description, so that it can be imported",
+                                button: true,
+                                suggestion_type: 'field_builder',
+                                suggestion_field: "txtLongDescription",
+                                suggestion_regex: '#^ $#',
+                                suggestion_equals: '',
+                                suggestion_replace: "%%strProductName%%",
+                                suggestion_statement_1: "If some items are missing descriptions.  Use the FieldBuilder Tab to regex for any 'blank' descriptions to display the product name, or another value.  In the example below I have set it to just capture that item's product Name.",
+                                suggestion_statement_2: "Depending on the Merchant, you can choose another term, such as 'Sunglasses', 'Fishing Products' or 'Wigs for Dogs' (i.e. whatever you want) if all the products fit a particular Categorization."
+                            }
+                            ,])
+                        break
+                    case 'strBuyURL':
+                        add_error('Some Item have blank Buy URL values, which is required and will not import', [
+                            standard_suggestion,
+                            {
+                                suggestion: "Create a Field Builder Rule that sets any 'Blank' But URL listings to use the product's primary URL as the URL, so that it can be imported",
+                                button: true,
+                                suggestion_type: 'field_builder',
+                                suggestion_field: "strBuyURL",
+                                suggestion_regex: '#^ $#',
+                                suggestion_equals: '',
+                                suggestion_replace: "https://www.WigsForDogs.com",
+                                suggestion_statement_1: "If some items are missing URLs, you can use the FieldBuilder Tab to regex for empty/blank BUY_URLs and replace the blank with the Merchant's website.  In the example below I have set it apply the primary URL for all items..",
+                                suggestion_statement_2: "This should be considered a 'last-ditch' solution.  Merchants really should be provided product URLs."
+                            }
+                            ,])
+                        break
+                }
+            }
             console.log(field.field_name, " is present")
         } else {
             for (i = 0; i < field.back_up.length; i++) {
@@ -81,6 +192,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                             suggestion_type: 'field_builder',
                             suggestion_field: "strDepartment",
                             suggestion_equals: "General",
+                            suggestion_replace: '',
                             suggestion_statement_1: "If no Departments are available, you can use the FieldBuilder Tab to set all item's department to a chosen value.  In the example below I have set it to 'General'.",
                             suggestion_statement_2: "Depending on the Merchant, you can choose another term, such as 'Sunglasses', 'Fishing Products' or 'Wigs for Dogs' (i.e. whatever you want) if all the products fit a particular Categorization."
                         }
@@ -100,6 +212,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                             suggestion_type: 'field_builder',
                             suggestion_field: "strProductName",
                             suggestion_equals: "%%strProductSKU%%",
+                            suggestion_replace: '',
                             suggestion_statement_1: "In the example below, we set the Product Name to MATCH the Product SKU for ALL ITEMS",
                             suggestion_statement_2: "This should be never really be used.  Merchants should have product names."
                         }
@@ -119,6 +232,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                             suggestion_type: 'field_builder',
                             suggestion_field: "strLargeImage",
                             suggestion_equals: "https://www.cat-pajamas.net/crazycatlogo.png/",
+                            suggestion_replace: '',
                             suggestion_statement_1: "If no Image URLs are available, you can use the FieldBuilder Tab to set all item's images to just display to the Merchant's logo.  In the example below I have set it to an image URL for all items.",
                             suggestion_statement_2: "This should be considered a 'last-ditch' solution.  Merchants really should be provided product Image URLs."
                         }
@@ -133,6 +247,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                             suggestion_type: 'field_builder',
                             suggestion_field: "txtLongDescription",
                             suggestion_equals: "%%strProductName%%",
+                            suggestion_replace: '',
                             suggestion_statement_1: "If no descriptions are available, you can use the FieldBuilder Tab to set all item's descriptions to match another value.  In the example below I have set it to just capture that item's product Name.",
                             suggestion_statement_2: "Depending on the Merchant, you can choose another term, such as 'Sunglasses', 'Fishing Products' or 'Wigs for Dogs' (i.e. whatever you want) if all the products fit a particular Categorization."
                         }
@@ -147,6 +262,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                             suggestion_type: 'field_builder',
                             suggestion_field: "strBuyURL",
                             suggestion_equals: "https://www.WigsForDogs.com",
+                            suggestion_replace: '',
                             suggestion_statement_1: "If no URLs are available, you can use the FieldBuilder Tab to set all item's BUY_URLs to just direct to the Merchant's website.  In the example below I have set it apply the primary URL for all items..",
                             suggestion_statement_2: "This should be considered a 'last-ditch' solution.  Merchants really should be provided product URLs."
                         }
@@ -349,8 +465,8 @@ function build_pipe_display(type) {
             console.log('variant', pipe_map)
             break
     };
-    document.getElementById("pipe_display").innerHTML = pipe_map
-    document.getElementById('variant_pipe_display').innerHTML = variant_pipe_map
+    document.getElementById("pipe_display").innerHTML = pipe_map;
+    document.getElementById('variant_pipe_display').innerHTML = variant_pipe_map;
 };
 function add_note(text, subtext) {
     var noteList = document.getElementById('mapping_notes');
@@ -389,13 +505,14 @@ function add_error(text, subtext, buttonParts) {// Function to Add Line Item Err
                         button_display.onclick = function () {
                             document.getElementById('buildFieldName').value = object.suggestion_field;
                             document.getElementById('buildFieldFormula').value = object.suggestion_equals;
+                            document.getElementById('buildFieldRegex').value = object.suggestion_regex;
+                            document.getElementById('buildFieldReplace').value = object.suggestion_replace;
                             document.getElementById('solution-text-1').innerHTML = object.suggestion_statement_1;
                             document.getElementById('solution-text-2').innerHTML = object.suggestion_statement_2;
 
                         };
                         button_html = button_display
                         break
-
                 }
             }
             var secondaryListItem = document.createElement('div');
@@ -407,7 +524,6 @@ function add_error(text, subtext, buttonParts) {// Function to Add Line Item Err
     };
     errorList.appendChild(newListItem);
     newListItem.appendChild(buttonListItem);
-
 };
 function reveal_hidden(arr) {//Reveals a hidden HTML element.
     arr.forEach(id => {
@@ -422,7 +538,6 @@ function hide(arr) {//Reveals a hidden HTML element.
         let element = document.getElementById(id);
         element.hidden = true
     })
-
 };
 function copyToClipboard(id) {// Create a single text value, to clipboard
     let copy = '';
@@ -431,9 +546,7 @@ function copyToClipboard(id) {// Create a single text value, to clipboard
     }
     else { copy = document.getElementById(id).innerText };
     navigator.clipboard.writeText(copy);
-
 };
-
 function check_for_blank_columns(arr, allRows) {
     let delimiter = ''
     let blank_columns = new Array(arr.length)
@@ -441,8 +554,8 @@ function check_for_blank_columns(arr, allRows) {
     for (k = 0; k < arr.length; k++) {
         blank_columns[k] = false;
         test_columns[k] = 0;
-    }
-    console.log(blank_columns)
+    };
+    console.log(blank_columns);
     switch (feedfile.file_type) {
         case 'text/csv':
             delimiter = ','
@@ -452,20 +565,23 @@ function check_for_blank_columns(arr, allRows) {
             break
         case "text/plain":
             if (allRows[0].includes("|")) {
-                add_note('Delimiter: Pipes (|)')
-                delimiter = '|'
+                add_note('Delimiter: Pipes (|)');
+                document.getElementById('delimiter_display').innerHTML = 'Delimiter: Pipes (|)';
+                delimiter = '|';
             } else if (allRows[0].includes("\t")) {
-                add_note("Delimiter: TABS")
-                delimiter = /\t/g
+                add_note("Delimiter: TABS");
+                document.getElementById('delimiter_display').innerHTML = "Delimiter: TABS";
+                delimiter = /\t/g;
             } else if (allRows[0].includes(",")) {
-                add_note("Delimiter: Commas")
-                delimiter = ","
+                add_note("Delimiter: Commas");
+                document.getElementById('delimiter_display').innerHTML = "Delimiter: Commas";
+                delimiter = ",";
             }
     };
-    let blank_row = new Array()
-    console.log(delimiter)
+    let blank_row = new Array();
+    console.log(delimiter);
     if (delimiter == "") { } else {
-        console.log(allRows[1])
+        console.log(allRows[1]);
         for (i = 1; i < allRows.length - 1; i++) {
             let x = allRows[i]
                 .replace("\r", "").split(delimiter);
@@ -487,13 +603,14 @@ function check_for_blank_columns(arr, allRows) {
         };
         if ((el > 0) && (el < blank_row.length)) {
             feedfile.contains_empty_values.push(index)
-        }
+        };
     });
     blank_columns.forEach((el, index) => {
         if (el === true) {
             feedfile.blank_columns.push(index)
         };
     });
+    add_note('Checked ' + blank_row.length + " rows for missing data", [feedfile.blank_columns.length + " columns had NO DATA", feedfile.contains_empty_values.length + " columns had empty values in some rows"])
     console.log(blank_columns);
     console.log(feedfile.blank_columns);
 };
@@ -582,7 +699,6 @@ function readFile(input) {
         };
         check_for_blank_columns(firstArray, allLines)
         determine_fields(firstArray); //FIRST MAPPING STEP
-
         console.log(feedfile);
     };
     fileReader.onerror = function () {

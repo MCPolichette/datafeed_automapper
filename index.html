@@ -15,14 +15,17 @@
 
 <body>
     <div class="container-sm fixed-top">
-        <br>
-        <h4 id="title" class="justify-content-center "><strong>Mark's Automapper</strong></h4>
-    </div>
-    <div class='container-fluid d-flex flex-column min-vh-100 justify-content-center align-items-center'>
+        <div class="row">
+            <div class="col-4">
+                <h4 id="title" class="justify-content-center "><strong>Mark's Automapper</strong></h4>
+            </div>
+        </div>
+    </div><br><br>
+    <div class='container-fluid d-flex flex-column min-vh-100 justify-content-center align-items-center'><br>
         <div class="row">
             <!-- <button onclick="delete_this_function(exampleColumns)">Magic Test Button</button> -->
             <!-- <button data-bs-toggle="modal" data-bs-target="#solution-modal">">Magic Test Button</button> -->
-            <button id="refresh_page" type="button" hidden class="btn btn-secondary btn-sm"
+            <button id="refresh_page" type="button" hidden class="btn btn-primary btn-lg"
                 onClick="window.location.reload();">Map a new file. </button>
             <div id='file_input'>
                 <label for="formFileLg" class="form-label">Select downloaded Feed File</label>
@@ -36,7 +39,6 @@
         <div class='container' hidden id="post_upload_display">
             <div class='row'>
                 <div class="col-12">
-                    <br>
                     <div id='tableDisplay'>
                         <div class="table-responsive shadow p-3 mb-5 bg-body rounded">
                             <table id="table_map"
@@ -68,7 +70,7 @@
                             onclick="variant_toggle()">Variant mapping is
                             available - Click Here </button>
                         <button id="editing-toggle" type="button" class="btn btn-outline-secondary btn-sm"
-                            onclick="is_editing_toggle()">Click to adjust Mapping<br> <small>(experimental)</small>
+                            onclick="is_editing_toggle()">Click to adjust Mapping
                         </button>
                     </div>
                     <hr>
@@ -95,6 +97,7 @@
                                         <strong>
                                             <p id='pipe_display' class='mapView'>Pipe Delimeted Map:</p>
                                             <p id='variant_pipe_display' class='mapView'></p>
+                                            <h6 id="delimiter_display"></h6>
                                         </strong>
                                     </div>
                                     <div class="d-grid gap-2 col-6 mx-auto ">
@@ -203,7 +206,7 @@
                                         <tr>
                                             <td valign='top' align='right'><b>Regex search for </b></td>
                                             <td valign='top' align='left'> <input size='15' maxlength='255'
-                                                    id='buildFieldSearch' type='text'><strong>
+                                                    id='buildFieldRegex' type='text'><strong>
                                                     replace with </strong><input size='30' maxlength='255'
                                                     id='buildFieldReplace' type='text'></td>
                                         </tr>
