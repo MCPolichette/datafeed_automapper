@@ -51,13 +51,18 @@
                         primary variant fields (i.e. strProductSku, and strAttribute1. Currently working on a logic
                         based solution</div>
                     <br>
-                    <div class="row">
-                        <div class='col-6'>
+                    <div class="row justify-content-md-center">
+                        <div class='col-4'>
                             <h5><strong>Notes:</strong></h5>
                             <ul class="list-group list-group-flush" id="mapping_notes">
                             </ul>
                         </div>
-                        <div class='col-6 '>
+                        <div id="display_att_map" class='col-4' hidden>
+                            <h5><strong>str Attributes:</strong></h5>
+                            <ul class="list-group list-group-flush" id="att-map">
+                            </ul>
+                        </div>
+                        <div id="display_errors" class='col-4' hidden>
                             <h5><strong>Errors:</strong></h5>
                             <ul class="list-group list-group-flush" id="mapping_errors">
 
@@ -66,7 +71,7 @@
                     </div>
                     <br>
                     <div class="d-grid col-6 mx-auto gap-2">
-                        <button id="variant-toggle" type="button" hidden class="btn btn-secondary btn-lg"
+                        <button id="variant-toggle" type="button" hidden class="btn btn-success btn-lg"
                             onclick="variant_toggle()">Variant mapping is
                             available - Click Here </button>
                         <button id="editing-toggle" type="button" class="btn btn-outline-secondary btn-sm"
@@ -95,9 +100,9 @@
                                 <div class="modal-body">
                                     <div class="shadow p-3 mb-5 bg-body rounded">
                                         <strong>
-                                            <p id='pipe_display' class='mapView'>Pipe Delimeted Map:</p>
-                                            <p id='variant_pipe_display' class='mapView'></p>
-                                            <h6 id="delimiter_display"></h6>
+                                            <p id='pipe_display' class='mapView text-wrap'>Pipe Delimeted Map:</p>
+                                            <p id='variant_pipe_display' class='mapView text-wrap'></p>
+                                            <h5 id="delimiter_display"></h5>
                                         </strong>
                                     </div>
                                     <div class="d-grid gap-2 col-6 mx-auto ">
