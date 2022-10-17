@@ -64,7 +64,6 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                     case 'strDepartment':
                         add_error('Some Item have blank Department values, which is required.  These items will not import', [
                             standard_suggestion,
-                            ,
                             { suggestion: "review the Merchant Provided columns to see if there is a MORE complete column to map for this value (e.g. Category or SubCategory)" },
                             {
                                 suggestion: 'Create a Field Builder Rule that sets any "Blank" Departments to have a "General" Department label upon import',
@@ -282,6 +281,19 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
     build_pipe_display();
     build_mapped_table("standard");
 };
+function attribute_notes() {
+    fields.attribute_map.forEach(attribute => {
+        if (feedfile.map.includes(attribute.name)) {
+            document.getElementById('display_att_map').hidden = false;
+            var attribute_note = document.getElementById('att-map');
+            var newListItem = document.createElement('li');
+            newListItem.classList.add("list-group-item", "small");
+            newListItem.appendChild(document.createTextNode(attribute.name + " - " + attribute.title));
+            attribute_note.appendChild(newListItem);
+        }
+
+    })
+}
 function duplicate_check(map) {
     console.log("checking for duplicates")
     for (i = 0; i < map.length; i++) {
@@ -373,7 +385,6 @@ function build_mapped_table(table_type) {
             });
             break
     };
-
     // Identifies empty columns, and highlights header row accordingly.
     table.rows[0].classList.add('table-info', 'h5')
     if ((feedfile.blank_columns.length > 0) && (feedfile.blank_columns.length != feedfile.map.length)) {
@@ -417,7 +428,6 @@ function build_select_options(i) {
             if (use_this_map.includes(fields.all[j].field_name)) {
                 new_option.disabled = true
             }
-
             selection.add(new_option)
         }
     }
@@ -455,7 +465,6 @@ function update_map(new_value, current_value, index) {
     }
     if (is_variant) { build_mapped_table('variant') } else { build_mapped_table('standard') }
     make_map_for_variants()
-
     console.log(feedfile);
 };
 function build_pipe_display(type) {
@@ -489,9 +498,9 @@ function add_note(text, subtext) {
             newListItem.appendChild(secondaryListItem);
         })
     };
-
 };
 function add_error(text, subtext, buttonParts) {// Function to Add Line Item Errors
+    document.getElementById('display_errors').hidden = false;
     var errorList = document.getElementById('mapping_errors');
     var newListItem = document.createElement('li');
     newListItem.classList.add("list-group-item", 'position-relative', "list-group-item-danger");
@@ -721,6 +730,7 @@ function readFile(input) {
         };
         check_for_blank_columns(firstArray, allLines)
         determine_fields(firstArray); //FIRST MAPPING STEP
+        attribute_notes();
         console.log(feedfile);
     };
     fileReader.onerror = function () {

@@ -1,4 +1,62 @@
 var fields = {
+    attribute_map: [
+        {
+            name: 'strAttribute1',
+            title: 'Parent Group ID',
+        },
+        {
+            name: 'strAttribute2',
+            title: 'Color',
+        },
+        {
+            name: 'strAttribute3',
+            title: 'Size',
+        },
+        {
+            name: 'strAttribute4',
+            title: 'Pattern',
+        },
+        {
+            name: 'strAttribute5',
+            title: 'Material',
+        },
+        {
+            name: 'strAttribute6',
+            title: 'Age Group',
+        },
+        {
+            name: 'strAttribute7',
+            title: 'Gender',
+        },
+        {
+            name: 'strAttribute8',
+            title: 'UPC',
+        },
+        {
+            name: 'strAttribute9',
+            title: 'Availability',
+        },
+        {
+            name: 'strAttribute10',
+            title: 'Google Product Category',
+        },
+        {
+            name: 'strMediumImage',
+            title: 'Medium Image URL',
+        },
+        {
+            name: 'txtAttribute1',
+            title: 'Variants XML'
+        },
+        {
+            name: 'txtAttribute2',
+            title: 'GTIN',
+        },
+        {
+            name: 'txtAttribute3',
+            title: 'Key Words',
+        },
+    ],
     att_map: attributeMap = `<Fields>
                 <Field><name>strAttribute1</name><title>Parent Group ID</title><type>string</type></Field>
 
