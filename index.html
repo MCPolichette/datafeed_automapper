@@ -21,12 +21,13 @@
             </div>
         </div>
     </div><br><br>
-    <div class='container-fluid d-flex flex-column min-vh-100 justify-content-center align-items-center'><br>
+    <div class='container-fluid d-flex flex-column min-vh-100 justify-content-center align-items-center'>
         <div class="row">
             <!-- <button onclick="delete_this_function(exampleColumns)">Magic Test Button</button> -->
             <!-- <button data-bs-toggle="modal" data-bs-target="#solution-modal">">Magic Test Button</button> -->
             <button id="refresh_page" type="button" hidden class="btn btn-primary btn-lg"
                 onClick="window.location.reload();">Map a new file. </button>
+            <br>
             <div id='file_input'>
                 <label for="formFileLg" class="form-label">Select downloaded Feed File</label>
                 <input onchange="readFile(this)" class="form-control form-control-lg" id="formFileLg" type="file">
@@ -46,12 +47,24 @@
                             </table>
                         </div>
                     </div>
-                    <div class="alert alert-danger" role="alert" hidden id='editor_warning'>This edit feature may
-                        experience trouble in remapping
-                        primary variant fields (i.e. strProductSku, and strAttribute1. Currently working on a logic
-                        based solution</div>
                     <br>
-                    <div class="row justify-content-md-center">
+                    <div class="d-grid col-6 mx-auto gap-2">
+                        <button id="variant-toggle" type="button" hidden class="btn btn-success btn-lg"
+                            onclick="variant_toggle()">Variant
+                            mapping is
+                            available - Click Here </button>
+                        <button id="editing-toggle" type="button" class="btn btn-outline-secondary btn-sm"
+                            onclick="is_editing_toggle()">Click to adjust Mapping
+                        </button>
+                        <hr>
+                        <button type="button" class="btn btn-lg btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#pipe_modal">
+                            Give Me the Pipe Delimited Map!
+                        </button>
+                    </div>
+                    <hr>
+
+                    <div class="row justify-content-md-center text-break">
                         <div class='col-4'>
                             <h5><strong>Notes:</strong></h5>
                             <ul class="list-group list-group-flush" id="mapping_notes">
@@ -69,24 +82,10 @@
                             </ul>
                         </div>
                     </div>
-                    <br>
-                    <div class="d-grid col-6 mx-auto gap-2">
-                        <button id="variant-toggle" type="button" hidden class="btn btn-success btn-lg"
-                            onclick="variant_toggle()">Variant mapping is
-                            available - Click Here </button>
-                        <button id="editing-toggle" type="button" class="btn btn-outline-secondary btn-sm"
-                            onclick="is_editing_toggle()">Click to adjust Mapping
-                        </button>
-                    </div>
-                    <hr>
+
                 </div>
                 <div class="d-grid col-6 mx-auto gap-2">
                     <br>
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pipe_modal">
-                        Give Me the Pipe Delimited Map!
-                    </button>
-
                     <!-- GET PIPES Modal -->
                     <div class="modal fade" id="pipe_modal" data-bs-backdrop="static" data-bs-keyboard="false"
                         tabindex="-1" aria-labelledby="pipe_modalLabel" aria-hidden="true">

@@ -6,7 +6,8 @@ var feedfile = {
     map_for_variants: [],
     blank_columns: [],
     contains_empty_values: [],
-    file_type: ''
+    file_type: '',
+    rows_to_check: 150,
 };
 is_variant = false;
 allLines = [];
@@ -54,15 +55,18 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
     required.forEach((field) => {
         if (map.includes(field.field_name)) {
             let index = (map.indexOf(field.field_name))
-            if (feedfile.contains_empty_values.includes(index)) {
+            if (feedfile.contains_empty_values.find(x => x.i === index)) {
+                let amt = feedfile.contains_empty_values.find(x => x.i === index)
+                console.log(amt)
                 // !? NEW SWITCH FOR  MISSING REQUIRED FIELDS
                 // add_error(field.field_name + ' is empty in some rows', [{ suggestion: "OOPS!" }])
                 let standard_suggestion = {
                     suggestion: 'If this a small amount, it can be ignored.'
                 };
+                let not_all_will_import = (field.field_name + " - " + amt.percent + "% of the items inspected were missing this required field, and will not import")
                 switch (field.field_name) {
                     case 'strDepartment':
-                        add_error('Some Item have blank Department values, which is required.  These items will not import', [
+                        add_error(not_all_will_import, [
                             standard_suggestion,
                             { suggestion: "review the Merchant Provided columns to see if there is a MORE complete column to map for this value (e.g. Category or SubCategory)" },
                             {
@@ -79,7 +83,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                         ])
                         break
                     case "strProductSKU":
-                        add_error('Some Item have blank SKU values, which is required.  These items will not import', [
+                        add_error(not_all_will_import, [
                             standard_suggestion,
                             {
                                 suggestion: "Create a Field Builder Rule that sets any 'Blank' Product Skus to match that Product's Name",
@@ -95,7 +99,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                             ,])
                         break
                     case 'strProductName':
-                        add_error('Some Item have blank Product Names values, which is required.  These items will not import', [
+                        add_error(not_all_will_import, [
                             standard_suggestion,
                             {
                                 suggestion: "Create a Field Builder Rule that sets any 'Blank' ProductNames to match that Product's SKU",
@@ -111,14 +115,14 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                         ])
                         break
                     case 'dblProductPrice':
-                        add_error('Some Item have blank price values, which is required.  These items will not import', [
+                        add_error(not_all_will_import, [
                             standard_suggestion,
                             ,
                             { suggestion: "review the Merchant Provided columns to see if there is a MORE complete column to map for this value (e.g. strSalePrice). Also notify the Merchant that item's missing a default price will not import." },
                             ,])
                         break
                     case 'strLargeImage':
-                        add_error('Some Item have blank Image values, which is required.  These items will not import', [
+                        add_error(not_all_will_import, [
                             standard_suggestion,
                             { suggestion: "review the Merchant Provided columns to see if there is a MORE complete column to map for this value (e.g. Medium Image or Thumbnail Image" },
                             {
@@ -135,7 +139,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                         ])
                         break
                     case 'txtLongDescription':
-                        add_error('Some Item have blank Description values, which is required.  These items will not import', [
+                        add_error(not_all_will_import, [
                             standard_suggestion,
                             ,
                             { suggestion: "review the Merchant Provided columns to see if there is a MORE complete column to map for this value (e.g. short description" },
@@ -153,7 +157,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                             ,])
                         break
                     case 'strBuyURL':
-                        add_error('Some Item have blank Buy URL values, which is required.  These items will not import', [
+                        add_error(not_all_will_import, [
                             standard_suggestion,
                             {
                                 suggestion: "Create a Field Builder Rule that sets any 'Blank' But URL listings to use the product's primary URL as the URL, so that it can be imported",
@@ -185,12 +189,13 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
     required.forEach((field) => {
         if (map.includes(field.field_name)) { }
         else {
+            let cannot_map = field.field_name + " -  Unable to map a column for this required field"
             let standard_suggestion = {
                 suggestion: 'Try using the adjust mapping button, to insert this required field above.'
             };
             switch (field.field_name) {
                 case 'strDepartment':
-                    add_error('unable to map a column for Department', [
+                    add_error(cannot_map, [
                         standard_suggestion,
                         {
                             suggestion: 'Force all items to have a "General" Department label upon import',
@@ -205,12 +210,12 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                     ])
                     break
                 case "strProductSKU":
-                    add_error('unable to map a column for ProductSKU', [
+                    add_error(cannot_map, [
                         standard_suggestion
                         ,])
                     break
                 case 'strProductName':
-                    add_error('unable to map a column for ProductName', [
+                    add_error(cannot_map, [
                         standard_suggestion,
                         {
                             suggestion: "Force all items to have the Product Name, just match the Product's SKU",
@@ -225,12 +230,12 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                     ])
                     break
                 case 'dblProductPrice':
-                    add_error('unable to map a column for ProductPrice', [
+                    add_error(cannot_map, [
                         standard_suggestion
                         ,])
                     break
                 case 'strLargeImage':
-                    add_error('unable to map a column for LargeImage', [
+                    add_error(cannot_map, [
                         standard_suggestion,
                         {
                             suggestion: "Force all items to use the merchant's logo URL, so that it can be imported",
@@ -245,7 +250,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                     ])
                     break
                 case 'txtLongDescription':
-                    add_error('unable to map a column for LongDescription', [
+                    add_error(cannot_map, [
                         standard_suggestion,
                         {
                             suggestion: "Force all items to have the product's Name as the description, so that it can be imported",
@@ -260,7 +265,7 @@ function check_required_fields() { //REVIEW THE determinePotentialDepartmentsFun
                         ,])
                     break
                 case 'strBuyURL':
-                    add_error('unable to map a column for BuyURL', [
+                    add_error(cannot_map, [
                         standard_suggestion,
                         {
                             suggestion: "Force all items to link to the merchant's home-page, so that it can be imported",
@@ -618,7 +623,7 @@ function check_for_blank_columns(arr, allRows) {
             blank_columns[index] = true
         };
         if ((el > 0) && (el < blank_row.length)) {
-            feedfile.contains_empty_values.push(index)
+            feedfile.contains_empty_values.push({ i: index, percent: ((el / blank_row.length) * 100).toFixed(2) })
         };
     });
     blank_columns.forEach((el, index) => {
@@ -630,7 +635,7 @@ function check_for_blank_columns(arr, allRows) {
     let empty_column_names = [];
     if (feedfile.contains_empty_values.length > 0) {
         feedfile.contains_empty_values.forEach(column => {
-            incomplete_columns.push(feedfile.merchant_layout[column])
+            incomplete_columns.push(feedfile.merchant_layout[column.i])
         })
     } else {
         incomplete_columns.push('no other notes')
@@ -725,8 +730,8 @@ function readFile(input) {
             feedfile.variant_map.push("")
         };
         console.log(feedfile);
-        if (allLines.length > 50) {
-            allLines.splice(51, allLines.length)
+        if (allLines.length > feedfile.rows_to_check) {
+            allLines.splice((feedfile.rows_to_check + 2), allLines.length)
         };
         check_for_blank_columns(firstArray, allLines)
         determine_fields(firstArray); //FIRST MAPPING STEP
