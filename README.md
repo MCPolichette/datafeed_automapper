@@ -12,15 +12,15 @@ This is a work in progress, and I am regularly adding additional features to imp
 
 This was also an excersize in getting re-aquainted with bootstrap styling, keeping the styling simple and readable. 
 
-### Process (continuously updated.  More unwritten features)
-  1. uploads file, makes two arrays of the top row.
-     - first Array, no edits, used for table as a Merchant-Map 
-     - second array, edits out all the common variable differences ( spaces, underscores, hyphens, and common words like 'item, product')
-  2. runs second arrray through filtered array of 'all fields' objects(noted below) to identify best match.        
-  3. runs check loops, to make sure that ALL required fields have the best possible option. (array of 'required' fields) objects)
-  4. creates a pipe delimited map.
-  5. displays a table with first array and map. 
-  6. table has drop down menus to change fields 
+### User Process
+  1. Upload file
+     - the app.js file identifies the file-type, the delimiters, and maps the file to it's best ability 
+     - It delivers the map, displaying the Merchant's column titles, and the assumed mapping.
+  2. User has the option to view the mapping as a variant import, or not.        
+  3. User has the option to edit the mapping.
+  4. With button clicks, one can have a modal delivered that displays a pipe delimited map of the table.  With additional maps if needed.
+  5. Refresh the page (manually of via button click) to map a new file.
+(other unlisted features are added regularly)
 
 ### NEW UPDATES from original file
 I originally had a single HTML file that had very few features.  
@@ -43,5 +43,3 @@ I originally had a single HTML file that had very few features.
   - [ ]An XML modal, just like the shopify one, that inspects the file and recommends a template.
   - [ ]Notes regarding how many parent Skus are identified compared to the total number rows.
   - [ ]adding links to OTHER troubleshooting steps / and solutions.. to make that page a ONE STOP datafeed troubleshooting solution.
-
-   
