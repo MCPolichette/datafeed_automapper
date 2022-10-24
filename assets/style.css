@@ -37,9 +37,17 @@
      transition: transform 2s;
  }
 
-
  #title:hover {
      transform: rotate(-180deg);
-     color: blue;
+     color: black;
+     text-shadow: 2px 2px 8px #aae0fb;
 
+ }
+
+ pre {
+     white-space: pre-wrap;
+ }
+
+ .cron_input {
+     width: 11em
  }
