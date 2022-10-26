@@ -694,12 +694,12 @@ function readFile(input) {
         console.log(feedfile.first_row)
         console.log(feedfile.merchant_layout.length, feedfile.merchant_layout[31])
         if ((feedfile.merchant_layout[31] == shopify_API_feed_examples[0].column_layout[31])) {
-            // alert("this is a shopify Feed")
+            document.getElementById('crontab_display').hidden = true;
             console.log('its a match')
             var shopify_modal = new bootstrap.Modal(document.getElementById('alert-modal'), {
                 keyboard: false
             });
-            document.getElementById('alert-statement').innerHTML = "This appears to be a Shopify Datafeed"
+            document.getElementById('alert-statement').innerHTML = "This appears to be a Shopify Datafeed";
             document.getElementById('alert-image-1').src = "assets/shopify_september_2022.png"
             document.getElementById('alert-image-2').src = "assets/second_feed.png"
             shopify_modal.show();
@@ -717,6 +717,7 @@ function readFile(input) {
                 .replaceAll(' ', '')
                 .replaceAll('item', '')
                 .replaceAll('product', '')
+                .replaceAll('variant', '')
                 .replaceAll('\r', '')
                 .split("<newcolumn>");
         if (feedfile.merchant_layout.indexOf("product" || "item")) {// quickly check to see if the Merchant used 'product' or 'item' to define the product name, and ensure its placed in the array
@@ -741,4 +742,16 @@ function readFile(input) {
     fileReader.onerror = function () {
         alert(fileReader.error);
     };
+};
+function crontab_display() {
+    document.getElementById('crontab_display').hidden = false
+    document.getElementById('alert-text-1').innerHTML = "<p>These details need to be provided by the Shopify Merchant. </p><p>Instructions for getting these values can be found <a href='https://support.avantlink.com/hc/en-us/articles/115005423823-Shopify-Datafeed-Product-Feed-Integration'> in this integration document</a> </p><p>  Once generated, pass this information over to Jon via Slack. </p>";
+};
+function crontab_generator() {
+    let shopify_store = document.getElementById('shopify_store').value
+    let shopify_api_key = document.getElementById('shopify_api_key').value
+    let shopify_password = document.getElementById('shopify_password').value
+    let crontab_display = document.getElementById('crontab_text')
+    crontab_display.innerHTML =
+        "\nAPI key: " + shopify_api_key + "\npassword: " + shopify_password + "\nstorename" + shopify_store + ".myshopify.com\n================================\nftp://datafeeds:D7wV3qFfKg*M@batch.avantlink.com/shopify/" + shopify_store + ".csv\n================================\n45 16 * * * php /home/ubuntu/scripts/shopify_new.php '" + shopify_api_key + "' '" + shopify_password + "' '" + shopify_store + "' && sudo mv " + shopify_store + ".csv /home/ftp/datafeeds/shopify/" + shopify_store + ".csv && sudo chown datafeeds:datafeeds /home/ftp/datafeeds/shopify/" + shopify_store + ".csv\n================================"
 };
