@@ -23,7 +23,8 @@
             </div>
             <div class="col-4 position-absolute top-0 end-0">
                 <!-- <a class="navbar-brand" disabled href="../index.html">Mapper</a>  -->
-                <a class="navbar-brand" href="tool-pages/crontab-generator.html">Build a Crontab</a>
+                <a class="navbar-brand" data-bs-toggle="modal" data-bs-target="#alert-modal"
+                    onclick="crontab_display()"> Build a Crontab</a>
                 <a class="navbar-brand"
                     href="https://docs.google.com/document/d/11UlL6pkmpR2ftakMWehozzKl_IWKCjdolNV50IQw_eA/edit?usp=sharing">Datafeed
                     Notes</a>
@@ -90,11 +91,9 @@
                         <div id="display_errors" class='col-4' hidden>
                             <h5><strong>Errors:</strong></h5>
                             <ul class="list-group list-group-flush" id="mapping_errors">
-
                             </ul>
                         </div>
                     </div>
-
                 </div>
                 <div class="d-grid col-6 mx-auto gap-2">
                     <br>
@@ -140,53 +139,95 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Shopify/ALERTS MODAL -->
-                    <div class="modal fade" id="alert-modal" data-bs-backdrop="static" data-bs-keyboard="false"
-                        tabindex="-1" aria-labelledby="alert-modalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="alert-modal-title">Shopify Feed Help</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class='container'>
-                                        <h4 class="text-center" id="alert-statement"></h4>
-                                        <div id="alert-text-1" class="text-center alert alert-info" role="alert">
-                                            Follow the instructions in the image
-                                            below to COPY the map
-                                            settings from a Shopify Template.</div>
-                                        <img class="img-fluid" id='alert-image-1'>
-                                        <hr>
-                                        <div id="alert-text-2" class="text-center alert alert-info" role="alert">
-                                            Make sure you implement the feedfile
-                                            URL in the Secondary
-                                            tab</div>
-                                        <img class="img-fluid" id="alert-image-2">
 
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <hr>
                 </div>
             </div>
         </div>
+        <!-- Shopify/ALERTS MODAL -->
+        <div class="modal fade" id="alert-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="alert-modalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="alert-modal-title">Shopify Feed Help</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class='container'>
+                            <h4 class="text-center" id="alert-statement"></h4>
+                            <div id="alert-text-1" class="text-center alert alert-info" role="alert">
+                                Follow the instructions in the image
+                                below to COPY the map
+                                settings from a Shopify Template.</div>
+                            <img class="img-fluid" id='alert-image-1'>
+                            <div id="crontab_display" class="container ">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card  w-100">
+                                            <div class="card-body">
 
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text cron_input">Shopify Store:</span>
+                                                    <input type="text" id="shopify_store" class="form-control"
+                                                        aria-label="" aria-describedby="shopify_store">
+                                                    <span class="input-group-text"
+                                                        id="basic-addon2">.myshopify.com</span>
+                                                </div>
+
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text cron_input">Shopify API KEY:</span>
+                                                    <input type="text" id="shopify_api_key" class="form-control"
+                                                        aria-label="" aria-describedby="api_key">
+                                                </div>
+
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text cron_input">Shopify Password:</span>
+                                                    <input type="text" id="shopify_password" class="form-control"
+                                                        aria-label="" aria-describedby="shopify_password">
+                                                </div>
+
+                                                <button class="btn btn-primary" onclick="crontab_generator()">Get
+                                                    Crontab</button>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="card w-100">
+                                            <div class="card-body">
+                                                <blockquote>
+                                                    <pre>
+                                    <code id="crontab_text" style="word-wrap: break-word;">
+                                       
+                                    </code>
+                                  </pre>
+                                                </blockquote>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div id="alert-text-2" class="text-center alert alert-info" role="alert">
+                                Make sure you implement the feedfile
+                                URL in the Secondary
+                                tab</div>
+                            <img class="img-fluid" id="alert-image-2">
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
         <hr>
