@@ -231,7 +231,7 @@ var fields = {
         field_name: 'strAttribute8',
         valueTitle: 'Product UPC',
         type: '<type>string</type>',
-        matches: ['upc'],
+        matches: ['upc', 'upc/gtin'],
         variant: 'variant-upc'
     }, {
         field_name: 'strAttribute9',
@@ -249,7 +249,7 @@ var fields = {
         field_name: 'txtAttribute2',
         valueTitle: 'GTIN',
         type: '<type>string</type>',
-        matches: ['gtin'],
+        matches: ['gtin', 'gtin/upc'],
         variant: ''
     }, {
         field_name: 'txtAttribute3',
