@@ -243,7 +243,7 @@ var fields = {
         field_name: 'txtAttribute1',
         valueTitle: 'Variants XML',
         type: '<type>xml</type><compression>gz</compression>',
-        matches: ['xml', 'variantxml', 'variants', 'variantsxml'],
+        matches: ['xml', 'variantxml', 'variants', 'variantsxml', 's', 'sxml'],
         variant: ''
     }, {
         field_name: 'txtAttribute2',
