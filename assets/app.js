@@ -725,6 +725,7 @@ function readFile(input) {
             let j = feedfile.merchant_layout.indexOf("item")
             firstArray[i] = 'name'; firstArray[j] = 'name';
         };
+        console.log(firstArray)
         feedfile.variant_map = new Array;
         console.log(feedfile.variant_map)
         for (i = 0; i < column_count; i++) {
