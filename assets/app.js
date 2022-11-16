@@ -749,10 +749,17 @@ function crontab_display() {
     document.getElementById('alert-text-1').innerHTML = "<p>These details need to be provided by the Shopify Merchant. </p><p>Instructions for getting these values can be found <a href='https://support.avantlink.com/hc/en-us/articles/115005423823-Shopify-Datafeed-Product-Feed-Integration'> in this integration document</a> </p><p>  Once generated, pass this information over to Jon via Slack. </p>";
 };
 function crontab_generator() {
+    let merchant_id = document.getElementById('merchant_ID_input').value
+    let merchant_name = document.getElementById('merchant_name_input').value
     let shopify_store = document.getElementById('shopify_store').value
     let shopify_api_key = document.getElementById('shopify_api_key').value
-    let shopify_password = document.getElementById('shopify_password').value
+    let shopify_acess_token = document.getElementById('shopify_admin_token').value
     let crontab_display = document.getElementById('crontab_text')
+    let is_ibc = ""
+    if (document.getElementById("ibc_checked").checked = true) {
+        is_ibc = "IBC"
+    }
     crontab_display.innerHTML =
-        "\nAPI key: " + shopify_api_key + "\npassword: " + shopify_password + "\nstorename" + shopify_store + ".myshopify.com\n================================\nftp://datafeeds:D7wV3qFfKg*M@batch.avantlink.com/shopify/" + shopify_store + ".csv\n================================\n45 16 * * * php /home/ubuntu/scripts/shopify_new.php '" + shopify_api_key + "' '" + shopify_password + "' '" + shopify_store + "' && sudo mv " + shopify_store + ".csv /home/ftp/datafeeds/shopify/" + shopify_store + ".csv && sudo chown datafeeds:datafeeds /home/ftp/datafeeds/shopify/" + shopify_store + ".csv\n================================"
+        "\n# MERCHANT ID: " + merchant_id + " " + merchant_name + "\n [Minute][Hour] * * * php / home / ubuntu / scripts / shopify.php " + shopify_api_key + " '" + shopify_acess_token + "' '" + shopify_store + "'" + is_ibc + " && sudo mv" + shopify_store + ".csv / home / ftp / datafeeds / shopify / " + shopify_store + ".csv && sudo chown datafeeds: datafeeds / home / ftp / datafeeds / shopify / " + shopify_store + ".csv"
 };
+

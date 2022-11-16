@@ -172,6 +172,16 @@
                                     <div class="col-12">
                                         <div class="card  w-100">
                                             <div class="card-body">
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text cron_input">Merchant Name:</span>
+                                                    <input type="text" id="merchant_name_input" class="form-control"
+                                                        aria-label="" aria-describedby="api_key">
+                                                </div>
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text cron_input">Merchant ID:</span>
+                                                    <input type="text" id="merchant_ID_input" class="form-control"
+                                                        aria-label="" aria-describedby="api_key">
+                                                </div>
 
                                                 <div class="input-group mb-3">
                                                     <span class="input-group-text cron_input">Shopify Store:</span>
@@ -188,9 +198,14 @@
                                                 </div>
 
                                                 <div class="input-group mb-3">
-                                                    <span class="input-group-text cron_input">Shopify Password:</span>
-                                                    <input type="text" id="shopify_password" class="form-control"
-                                                        aria-label="" aria-describedby="shopify_password">
+                                                    <span class="input-group-text cron_input">Shopify Admin API Access
+                                                        Token:</span>
+                                                    <input type="text" id="shopify_admin_token" class="form-control"
+                                                        aria-label="" aria-describedby="shopify_admin_token">
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="ibc_checked">
+                                                    <label class="form-check-label" for="ibc_checked">IBC</label>
                                                 </div>
 
                                                 <button class="btn btn-primary" onclick="crontab_generator()">Get
