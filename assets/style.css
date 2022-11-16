@@ -49,7 +49,12 @@
  }
 
  .cron_input {
-     width: 11em
+     width: 18em;
+
+ }
+
+ .crontab_text {
+     text-align: right
  }
 
  .navbar-brand:hover {
