@@ -178,7 +178,7 @@ var fields = {
         matches: ['thumbnailurl', 'thumbnail', 'thumbnaillink', 'thumbnailimage', 'imageurlsmall', 'imagesmall', 'thumblink', 'thumbimage', 'thumburl'],
         variant: ''
     }, {
-        field_name: 'strMediumImageURL',
+        field_name: 'strMediumImage',
         matches: ['mediumimageurl', 'mediumimage', 'mediumimagelink', 'imageurlmedium', 'additionalimagelink', 'additionalimage', 'additionalimageurl'],
         variant: ''
     }, {
