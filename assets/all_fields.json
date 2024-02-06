@@ -16,12 +16,25 @@
 	},
 	{
 		"field_name": "dblProductPrice",
-		"matches": ["price", "retailprice", "retail", "regularprice"],
+		"matches": [
+			"price",
+			"retailprice",
+			"retail",
+			"regularprice",
+			"retialprice",
+			"retial"
+		],
 		"variant": "variant-retail_price"
 	},
 	{
 		"field_name": "strLargeImage",
-		"matches": ["imageurl", "image", "imageurllarge", "imagelink"],
+		"matches": [
+			"imageurl",
+			"image",
+			"imageurllarge",
+			"imagelink",
+			"imagefeatured"
+		],
 		"variant": "variant-image_url"
 	},
 	{
@@ -31,7 +44,7 @@
 	},
 	{
 		"field_name": "strBuyURL",
-		"matches": ["link", "buylink", "buyurl", "url"],
+		"matches": ["link", "buylink", "buyurl", "url", "permalink"],
 		"variant": "variant-detail_url"
 	},
 	{
