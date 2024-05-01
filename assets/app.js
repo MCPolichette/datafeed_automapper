@@ -60,7 +60,9 @@ function check_required_fields() {
 		if (map.includes(field.field_name)) {
 			let index = map.indexOf(field.field_name);
 			if (feedfile.contains_empty_values.find((x) => x.i === index)) {
-				let amt = feedfile.contains_empty_values.find((x) => x.i === index);
+				let amt = feedfile.contains_empty_values.find(
+					(x) => x.i === index
+				);
 				console.log(amt);
 				// !? NEW SWITCH FOR  MISSING REQUIRED FIELDS
 				// add_error(field.field_name + ' is empty in some rows', [{ suggestion: "OOPS!" }])
@@ -204,7 +206,8 @@ function check_required_fields() {
 								suggestion_field: "strBuyURL",
 								suggestion_regex: "#^ $#",
 								suggestion_equals: "",
-								suggestion_replace: "https://www.WigsForDogs.com",
+								suggestion_replace:
+									"https://www.WigsForDogs.com",
 								suggestion_statement_1:
 									"If some items are missing URLs, you can use the FieldBuilder Tab to regex for empty/blank BUY_URLs and replace the blank with the Merchant's website.  In the example below I have set it apply the primary URL for all items..",
 								suggestion_statement_2:
@@ -229,7 +232,8 @@ function check_required_fields() {
 		if (map.includes(field.field_name)) {
 		} else {
 			let cannot_map =
-				field.field_name + " -  Unable to map a column for this required field";
+				field.field_name +
+				" -  Unable to map a column for this required field";
 			let standard_suggestion = {
 				suggestion:
 					"Try using the adjust mapping button, to insert this required field above.",
@@ -347,7 +351,9 @@ function attribute_notes() {
 			var newListItem = document.createElement("li");
 			newListItem.classList.add("list-group-item", "small");
 			newListItem.appendChild(
-				document.createTextNode(attribute.name + " - " + attribute.title)
+				document.createTextNode(
+					attribute.name + " - " + attribute.title
+				)
 			);
 			attribute_note.appendChild(newListItem);
 		}
@@ -360,7 +366,11 @@ function duplicate_check(map) {
 			if (map[i] == map[j]) {
 				addError(
 					"Found a duplicate match for " + map[i],
-					" at index's " + i + " & " + j + " one will need to be deleted"
+					" at index's " +
+						i +
+						" & " +
+						j +
+						" one will need to be deleted"
 				);
 				return;
 			}
@@ -402,14 +412,16 @@ function variant_toggle() {
 		build_pipe_display("standard");
 		document.getElementById("copy_second_map").classList.add("disabled");
 		document.getElementById("secondary_mapping_image").hidden = true;
-		document.getElementById("variant-toggle").innerHTML = "View Variant Map";
+		document.getElementById("variant-toggle").innerHTML =
+			"View Variant Map";
 		is_variant = false;
 	} else {
 		build_mapped_table("variant");
 		build_pipe_display("variant");
 		document.getElementById("copy_second_map").classList.remove("disabled");
 		document.getElementById("secondary_mapping_image").hidden = false;
-		document.getElementById("variant-toggle").innerHTML = "View Standard Map";
+		document.getElementById("variant-toggle").innerHTML =
+			"View Standard Map";
 		is_variant = true;
 	}
 }
@@ -440,7 +452,8 @@ function build_mapped_table(table_type) {
 			let variant_title = (variant_row.insertCell(0).innerHTML =
 				"Variant Map:");
 			feedfile.variant_map.forEach((field, i) => {
-				let variant_cell = (variant_row.insertCell(i + 1).innerHTML = field);
+				let variant_cell = (variant_row.insertCell(i + 1).innerHTML =
+					field);
 			});
 			build_pipe_display("variant");
 
@@ -462,7 +475,9 @@ function build_mapped_table(table_type) {
 		feedfile.blank_columns.length != feedfile.map.length
 	) {
 		feedfile.blank_columns.forEach((empty_column) => {
-			table.rows[0].cells[empty_column + 1].classList.add("table-warning");
+			table.rows[0].cells[empty_column + 1].classList.add(
+				"table-warning"
+			);
 			table.rows[0].cells[empty_column + 1].insertAdjacentHTML(
 				"beforeend",
 				"<br><small>(empty column)</small>"
@@ -531,7 +546,9 @@ function update_map(new_value, current_value, index) {
 		feedfile.variant_map[index] = "";
 	} else {
 		let all = fields.all;
-		let updated_variant = all.find((x) => x.field_name === new_value).variant;
+		let updated_variant = all.find(
+			(x) => x.field_name === new_value
+		).variant;
 		console.log(updated_variant);
 		console.log(new_value, current_value, index);
 		let standard_map_value = new_value;
@@ -563,13 +580,18 @@ function build_pipe_display(type) {
 			console.log("standard", pipe_map);
 			break;
 		case "variant":
-			pipe_map = feedfile.map_for_variants.toString().replaceAll(",", "|");
-			variant_pipe_map = feedfile.variant_map.toString().replaceAll(",", "|");
+			pipe_map = feedfile.map_for_variants
+				.toString()
+				.replaceAll(",", "|");
+			variant_pipe_map = feedfile.variant_map
+				.toString()
+				.replaceAll(",", "|");
 			console.log("variant", pipe_map);
 			break;
 	}
 	document.getElementById("pipe_display").innerHTML = pipe_map;
-	document.getElementById("variant_pipe_display").innerHTML = variant_pipe_map;
+	document.getElementById("variant_pipe_display").innerHTML =
+		variant_pipe_map;
 }
 function add_note(text, subtext) {
 	var noteList = document.getElementById("mapping_notes");
@@ -581,7 +603,9 @@ function add_note(text, subtext) {
 		subtext.forEach((text) => {
 			var secondaryListItem = document.createElement("div");
 			secondaryListItem.classList.add("small");
-			secondaryListItem.appendChild(document.createTextNode(" - " + text));
+			secondaryListItem.appendChild(
+				document.createTextNode(" - " + text)
+			);
 			newListItem.appendChild(secondaryListItem);
 		});
 	}
@@ -607,7 +631,10 @@ function add_error(text, subtext, buttonParts) {
 					case "field_builder":
 						let button_display = document.createElement("button");
 						button_display.setAttribute("data-bs-toggle", "modal");
-						button_display.setAttribute("data-bs-target", "#solution-modal");
+						button_display.setAttribute(
+							"data-bs-target",
+							"#solution-modal"
+						);
 						button_display.innerHTML = "Example";
 						button_display.classList.add(
 							"btn-clipboard",
@@ -624,10 +651,12 @@ function add_error(text, subtext, buttonParts) {
 								object.suggestion_regex;
 							document.getElementById("buildFieldReplace").value =
 								object.suggestion_replace;
-							document.getElementById("solution-text-1").innerHTML =
-								object.suggestion_statement_1;
-							document.getElementById("solution-text-2").innerHTML =
-								object.suggestion_statement_2;
+							document.getElementById(
+								"solution-text-1"
+							).innerHTML = object.suggestion_statement_1;
+							document.getElementById(
+								"solution-text-2"
+							).innerHTML = object.suggestion_statement_2;
 						};
 						button_html = button_display;
 						break;
@@ -818,7 +847,10 @@ function readFile(input) {
 		// =========================================
 		console.log(feedfile.merchant_layout.length);
 		console.log(feedfile.first_row);
-		console.log(feedfile.merchant_layout.length, feedfile.merchant_layout[31]);
+		console.log(
+			feedfile.merchant_layout.length,
+			feedfile.merchant_layout[31]
+		);
 		if (
 			feedfile.merchant_layout[31] ==
 			shopify_API_feed_examples[0].column_layout[31]
@@ -835,7 +867,8 @@ function readFile(input) {
 				"This appears to be a Shopify Datafeed";
 			document.getElementById("alert-image-1").src =
 				"assets/shopify_september_2022.png";
-			document.getElementById("alert-image-2").src = "assets/second_feed.png";
+			document.getElementById("alert-image-2").src =
+				"assets/second_feed.png";
 			shopify_modal.show();
 		}
 		var column_count = feedfile.merchant_layout.length;
@@ -852,6 +885,7 @@ function readFile(input) {
 				.replaceAll(" ", "")
 				.replaceAll("item", "")
 				.replaceAll("product", "")
+				.replaceAll("catalog", "")
 				.replaceAll("variant", "")
 				.replaceAll("\r", "")
 				.split("<newcolumn>");
@@ -896,7 +930,7 @@ function crontab_generator() {
 	).value;
 	let crontab_display = document.getElementById("crontab_text");
 	let is_ibc = "";
-	if ((document.getElementById("ibc_checked").checked = true)) {
+	if (document.getElementById("ibc_checked").checked) {
 		is_ibc = "IBC";
 	} else {
 		is_ibc = "";
