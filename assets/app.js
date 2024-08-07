@@ -805,12 +805,12 @@ function file_data(myFile) {
 	feedfile.file_name = file.name.replace(/ *\([^)]*\) */g, "");
 	feedfile.file_size = file.size;
 	feedfile.file_type = file.type;
-	console.log(feedfile);
+	// console.log("ATTENTION FEEDFILE TYPE: "+feedfile);
 }
 function readFile(input) {
 	file_data(input);
 	loading_toggle();
-	hide(["file_input"]);
+	hide(["file_input", "xmlDownloadRow"]);
 	let file = input.files[0];
 	let fileReader = new FileReader();
 	var allLines = [];
