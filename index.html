@@ -36,15 +36,46 @@
     <br>
     <div class='container-fluid d-flex flex-column min-vh-100 justify-content-center align-items-center'>
         <div class="row">
+            <h4> Feed Mapping</h4>
             <!-- <button onclick="delete_this_function(exampleColumns)">Magic Test Button</button> -->
             <!-- <button data-bs-toggle="modal" data-bs-target="#solution-modal">">Magic Test Button</button> -->
             <button id="refresh_page" type="button" hidden class="btn btn-primary btn-lg"
                 onClick="window.location.reload();">Map a new file. </button>
             <br>
             <div id='file_input'>
-                <label for="formFileLg" class="form-label">Select downloaded Feed File</label>
+                <label for="formFileLg" class="form-label">Select Feed File to map</label>
                 <input onchange="readFile(this)" class="form-control form-control-lg" id="formFileLg" type="file">
             </div>
+        </div>
+        <br>
+        <div class="row"  id="xmlDownloadRow">
+            
+                <hr><div id="xmlInput">
+                <h5>XML Download Link Generator</h5>
+		<label for="xmlUrl">Enter XML URL:</label>
+		<input
+			type="text"
+			id="xmlUrl"
+			placeholder='e.g., https://website/filename.xml'
+		/>
+		<button onclick="generateLink()">Generate Download Link</button>
+</div>
+		<h6>Generated Link:</h6>
+		<div id="downloadLink"></div>
+
+		<script>
+			function generateLink() {
+                hide(["xmlInput"])
+				const input = document.getElementById("xmlUrl").value;
+				const [url, filename] = input.split(" download=");
+				const trimmedFilename = filename
+					? filename.replace(/['"]/g, "")
+					: "downloadedfile.xml";
+				const linkHTML = `<a href="${url.trim()}" download="${trimmedFilename.trim()}">Right Click and SAVE LINK AS to download XML</a>`;
+				document.getElementById("downloadLink").innerHTML = linkHTML;
+			}
+		</script>
+            
         </div>
         <div hidden='true' id="loading" class="text-primary spinner-border" style="width: 3rem; height: 3rem;"
             role="status">
@@ -90,6 +121,8 @@
                         </div>
                         <div id="display_errors" class='col-4' hidden>
                             <h5><strong>Errors:</strong></h5>
+                           
+
                             <ul class="list-group list-group-flush" id="mapping_errors">
                             </ul>
                         </div>
