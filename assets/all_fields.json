@@ -134,7 +134,13 @@
 		"field_name": "strAttribute1",
 		"valueTitle": "Product Parent Grouping Id",
 		" type": "<type>string</type>",
-		"matches": ["parentgroup", "parentgroupid", "groupid", "group"],
+		"matches": [
+			"parentid",
+			"parentgroup",
+			"parentgroupid",
+			"groupid",
+			"group"
+		],
 		"variant": "strProductSKU"
 	},
 	{

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>CSV Duplicate Detectpr and Save</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+	</head>
+	<body>
+		<h1>Duplicate Detector Tool</h1>
+		<input type="file" id="csvFile" accept=".csv" />
+		<br />
+		<button onclick="processCSV()">Find Duplicates and Format</button>
+		<hr />
+		<button onclick="saveFormattedOutput()">Save Formatted CSV</button>
+		<button onclick="saveCancelCSV(0)">
+			Save Cancel CSV (Transaction ID)
+		</button>
+		<button onclick="saveCancelCSV(1)">Save Cancel CSV (Order ID)</button>
+		<pre id="output"></pre>
+
+		<script>
+			let formattedOutput = [];
+			let merchantName = "";
+
+			function processCSV() {
+				const fileInput = document.getElementById("csvFile");
+				const file = fileInput.files[0];
+
+				if (!file) {
+					alert("Please select a CSV file.");
+					return;
+				}
+
+				Papa.parse(file, {
+					complete: function (results) {
+						const data = results.data;
+						const seen = {};
+						formattedOutput = [];
+						merchantName = data[1][0];
+
+						for (let i = 1; i < data.length; i++) {
+							// Assuming T = 20th column (index 19), K = 11th column (index 10), J = 10th column (index 9), L = 12th column (index 11)
+							const tValue = data[i][19];
+							const kValue = data[i][10];
+							const jValue = data[i][9];
+							const lValue = data[i][11];
+
+							const key = tValue + "_" + kValue; // Combine T and K values as a key
+
+							if (seen[key]) {
+								// Duplicate found, now let's check column J length and format accordingly
+								const previousRow = seen[key];
+								const prevJValue = previousRow[9];
+								let jGreater, jLesser;
+
+								// Check which J value is greater/less than 10 digits
+								if (
+									jValue.length >= 10 &&
+									prevJValue.length < 10
+								) {
+									jGreater = jValue;
+									jLesser = prevJValue;
+								} else if (
+									jValue.length < 10 &&
+									prevJValue.length >= 10
+								) {
+									jGreater = prevJValue;
+									jLesser = jValue;
+								}
+
+								// If both conditions are met, combine the values
+								if (jGreater && jLesser) {
+									formattedOutput.push([
+										jGreater,
+										jLesser,
+										kValue,
+										lValue,
+									]);
+								}
+							} else {
+								// Store the current row for future comparisons
+								seen[key] = data[i];
+							}
+						}
+
+						// Display formatted output in the browser
+						document.getElementById("output").textContent =
+							formattedOutput
+								.map((row) => row.join(", "))
+								.join("\n");
+					},
+				});
+			}
+
+			function saveCSV(headers, rows, filename) {
+				const csvContent = [headers.join(",")]
+					.concat(rows.map((row) => row.join(",")))
+					.join("\n");
+				const blob = new Blob([csvContent], {
+					type: "text/csv;charset=utf-8;",
+				});
+				const link = document.createElement("a");
+				const url = URL.createObjectURL(blob);
+				link.setAttribute("href", url);
+				link.setAttribute("download", filename);
+				link.style.visibility = "hidden";
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+			}
+
+			function saveFormattedOutput() {
+				const headers = [
+					"TransactionID",
+					"OrderID",
+					"Order Amount",
+					"Commission",
+				];
+				const rows = formattedOutput.map((row) => [
+					row[0],
+					row[1],
+					row[2].replace(/,/g, ""),
+					row[3].replace(/,/g, ""),
+				]);
+				saveCSV(
+					headers,
+					rows,
+					merchantName + " identified Shopify Duplicates.csv"
+				);
+			}
+
+			function saveCancelCSV(index) {
+				const headers = [
+					"Transaction/Order ID",
+					"Product ID/SKU",
+					"Return Item Amount",
+					"Return Item Quantity",
+					"Return Reason Code",
+				];
+				const rows = formattedOutput.map((row) => [
+					row[index],
+					"",
+					"",
+					"",
+					"CANCELED",
+				]);
+				const filename =
+					index === 0
+						? "BatchReturn-DuplicatedOrders_transaction.csv"
+						: "BatchReturn-DuplicatedOrders_order.csv";
+				saveCSV(headers, rows, merchantName + filename);
+			}
+		</script>
+	</body>
+</html>
