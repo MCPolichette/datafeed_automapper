@@ -22,6 +22,37 @@
 		<script>
 			let formattedOutput = [];
 			let merchantName = "";
+			function getColumnIndexes(headers) {
+				const columnMapping = {
+					orderId: "Order Id",
+					transactionAmount: "Transaction Amount",
+					baseCommission: "Base Commission",
+					lastClickThrough: "Last Click Through",
+				};
+
+				// Create an object to store the indexes
+				let columnIndexes = {
+					orderId: -1,
+					transactionAmount: -1,
+					baseCommission: -1,
+					lastClickThrough: -1,
+				};
+
+				// Loop through headers to find the indexes of the columns we need
+				headers.forEach((header, index) => {
+					console.log(header, index);
+					if (header === columnMapping.orderId)
+						columnIndexes.orderId = index;
+					if (header === columnMapping.transactionAmount)
+						columnIndexes.transactionAmount = index;
+					if (header === columnMapping.baseCommission)
+						columnIndexes.baseCommission = index;
+					if (header === columnMapping.lastClickThrough)
+						columnIndexes.lastClickThrough = index;
+				});
+
+				return columnIndexes;
+			}
 
 			function processCSV() {
 				const fileInput = document.getElementById("csvFile");
@@ -34,6 +65,10 @@
 
 				Papa.parse(file, {
 					complete: function (results) {
+						const headers = results.data[0]; // First row contains headers
+						const columnIndexes = getColumnIndexes(headers);
+
+						console.log(columnIndexes);
 						const data = results.data;
 						const seen = {};
 						formattedOutput = [];
@@ -41,32 +76,36 @@
 
 						for (let i = 1; i < data.length; i++) {
 							// Assuming T = 20th column (index 19), K = 11th column (index 10), J = 10th column (index 9), L = 12th column (index 11)
-							const tValue = data[i][19];
-							const kValue = data[i][10];
-							const jValue = data[i][9];
-							const lValue = data[i][11];
+							const lastClick =
+								data[i][columnIndexes.lastClickThrough];
+							const orderAmount =
+								data[i][columnIndexes.transactionAmount];
+							const report_order_id =
+								data[i][columnIndexes.orderId];
+							const commission =
+								data[i][columnIndexes.baseCommission];
 
-							const key = tValue + "_" + kValue; // Combine T and K values as a key
+							const key = lastClick + "_" + orderAmount; // Combine T and K values as a key
 
 							if (seen[key]) {
 								// Duplicate found, now let's check column J length and format accordingly
 								const previousRow = seen[key];
-								const prevJValue = previousRow[9];
+								const prevreport_order_id = previousRow[9];
 								let jGreater, jLesser;
 
 								// Check which J value is greater/less than 10 digits
 								if (
-									jValue.length >= 10 &&
-									prevJValue.length < 10
+									report_order_id.length >= 10 &&
+									prevreport_order_id.length < 10
 								) {
-									jGreater = jValue;
-									jLesser = prevJValue;
+									jGreater = report_order_id;
+									jLesser = prevreport_order_id;
 								} else if (
-									jValue.length < 10 &&
-									prevJValue.length >= 10
+									report_order_id.length < 10 &&
+									prevreport_order_id.length >= 10
 								) {
-									jGreater = prevJValue;
-									jLesser = jValue;
+									jGreater = prevreport_order_id;
+									jLesser = report_order_id;
 								}
 
 								// If both conditions are met, combine the values
@@ -74,8 +113,8 @@
 									formattedOutput.push([
 										jGreater,
 										jLesser,
-										kValue,
-										lValue,
+										orderAmount,
+										commission,
 									]);
 								}
 							} else {
