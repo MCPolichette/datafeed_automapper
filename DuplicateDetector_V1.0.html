@@ -76,6 +76,7 @@
 
 						for (let i = 1; i < data.length; i++) {
 							// Assuming T = 20th column (index 19), K = 11th column (index 10), J = 10th column (index 9), L = 12th column (index 11)
+							//Leeaving the above comment, BUT NOW its running based on the column indexes discovered in the getColumnIndexes function.
 							const lastClick =
 								data[i][columnIndexes.lastClickThrough];
 							const orderAmount =
@@ -90,7 +91,8 @@
 							if (seen[key]) {
 								// Duplicate found, now let's check column J length and format accordingly
 								const previousRow = seen[key];
-								const prevreport_order_id = previousRow[9];
+								const prevreport_order_id =
+									previousRow[columnIndexes.orderId];
 								let jGreater, jLesser;
 
 								// Check which J value is greater/less than 10 digits
