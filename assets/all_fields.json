@@ -62,11 +62,7 @@
 		"matches": ["googlecategory", "googlecategorization"],
 		"variant": false
 	},
-	{
-		"field_name": "dblItemCommission",
-		"matches": ["basedcommission", "ibc", "commission", "commissionrate"],
-		"variant": false
-	},
+
 	{
 		"field_name": "dblProductSalePrice",
 		"matches": ["saleprice", "sale"],
